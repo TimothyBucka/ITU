@@ -2,8 +2,9 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
-
+//use Illuminate\Http\Resources\Json\JsonResource; // to remove data wrap
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -19,6 +20,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Schema::defaultStringLength(191);
+        //JsonResource::withoutWrapping(); // to remove data wrap
     }
 }

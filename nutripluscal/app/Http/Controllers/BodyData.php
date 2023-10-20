@@ -33,7 +33,23 @@ class BodyData extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $body_data = $request->isMethod('put') ?
+        Body_data_model::findOrFail($request->body_data_id) : new Body_data_model; // chceck for put req. include id of body data else create new body data
+
+        $body_data->id = $request->input('body_data_id');
+        $body_data->height = $request->input('height');
+        $body_data->weight = $request->input('weight');
+        $body_data->age = $request->input('age');
+        $body_data->goal_target = $request->input('goal_target');
+        $body_data->bmi = $request->input('bmi');
+
+        if ($body_data->save()) {
+            return new Body_data_resource($body_data);
+        } else {
+            return response()->json([
+                'error' => 'Unable to save body data'
+            ], 500);
+        }
     }
 
     /**
@@ -69,6 +85,15 @@ class BodyData extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        // Get a single body data
+        $body_data = Body_data_model::findOrFail($id);
+
+        if($body_data->delete()) {
+            return new Body_data_resource($body_data);
+        } else {
+            return response()->json([
+                'error' => 'Unable to delete body data'
+            ], 500);
+        }
     }
 }

@@ -32,4 +32,4 @@ Route::post('body',  [BodyData::class, 'store']);
 Route::put('body',  [BodyData::class, 'store']);
 
 // Delete body data
-Route::delete('body',  [BodyData::class, 'destroy']);
+Route::delete('body/{id}',  [BodyData::class, 'destroy']);

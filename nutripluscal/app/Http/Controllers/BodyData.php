@@ -77,7 +77,28 @@ class BodyData extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $existing = Body_data_model::findOrFail($id);
+
+        $height = $request->input('height');
+        $weight = $request->input('weight');
+        $age = $request->input('age');
+        $goal_target = $request->input('goal_target');
+
+        $existing->height = $height ? $height : $existing->height;
+        $existing->weight = $weight ? $weight : $existing->weight;
+        $existing->age = $age ? $age : $existing->age;
+        $existing->goal_target = $goal_target ? $goal_target : $existing->goal_target;
+
+        $bmi = Body_data_model::calculateBMI($existing->$height, $existing->$weight);
+        $existing->bmi = $bmi ? $bmi : $existing->bmi;
+
+        if ($existing->save()) {
+            return $existing;
+        } else {
+            return response()->json([
+                'error' => 'Unable to update body data'
+            ], 500);
+        }
     }
 
     /**

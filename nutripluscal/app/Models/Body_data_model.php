@@ -11,4 +11,15 @@ class Body_data_model extends Model
 
     protected $table = 'body_data';
     public $timestamps = false;
+
+    public static function calculateBMI($height, $weight)
+    {
+        if ($height == 0 || $weight == 0) {
+            return null;
+        }
+
+        $height = $height / 100;
+        $bmi = $weight / ($height * $height);
+        return round($bmi, 1);
+    }
 }

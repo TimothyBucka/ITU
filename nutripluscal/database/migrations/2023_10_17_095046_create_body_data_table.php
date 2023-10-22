@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->float('height');
             $table->float('weight');
-            $table->int('age');
+            $table->unsignedInteger('age');
             $table->float('goal_target');
             $table->float('bmi');
         });

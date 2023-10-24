@@ -14,12 +14,12 @@ class Body_data_model extends Model
 
     public static function calculateBMI($height, $weight)
     {
-        if ($height == 0 || $weight == 0) {
+        if ($height == 0 || $weight == 0)
             return null;
-        }
-
+        
         $height = $height / 100;
-        $bmi = $weight / ($height * $height);
-        return round($bmi, 1);
+        $height = $height * $height;
+        
+        return round($weight / $height, 1);
     }
 }

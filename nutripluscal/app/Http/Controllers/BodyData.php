@@ -88,9 +88,9 @@ class BodyData extends Controller
         $existing->weight = $weight ? $weight : $existing->weight;
         $existing->age = $age ? $age : $existing->age;
         $existing->goal_target = $goal_target ? $goal_target : $existing->goal_target;
-
-        $bmi = Body_data_model::calculateBMI($existing->$height, $existing->$weight);
-        $existing->bmi = $bmi ? $bmi : $existing->bmi;
+        
+        $bmi = Body_data_model::calculateBMI($existing->height, $existing->weight);
+        $existing->bmi =  $bmi ? $bmi : $existing->bmi;
 
         if ($existing->save()) {
             return $existing;

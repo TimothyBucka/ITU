@@ -19,6 +19,8 @@ class Body_data extends JsonResource
             'id' => $this->id,
             'weight' => $this->weight,
             'height' => $this->height,
+            'age' => $this->age,
+            'goal_target' => $this->goal_target,
             'bmi' => $this->bmi,
             'date' => $this->date,
             'user_id' => $this->user_id,

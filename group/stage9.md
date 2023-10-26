@@ -8,6 +8,7 @@ Ako cieľovú platformu sme si zvolili webovú apikáciu. Implementácia sa riad
 Náš model je reprezentovaný triedami v jazyku PHP. Každý model reprezentuje tabuľku z dátového modelu v MySQL databáze. Všetky modely sú uložené v priečinku `app/Models`. Každý náš model rožširuje základnú funckionalitu abstraktnej triedy `Illuminate\Database\Eloquent\Model`. Táto trieda poskytuje základnú funckionalitu pre prácu s databázou. Základné funkcie, ktoré nám táto trieda poskytuje sú funckie na získavanie a editáciu záznamov z databázy napr. `all()`, `create()`. Je možné volať funkcie na spravovanie vzťahov medzi tabuľkami v databáze napr. `hasMany()`, `belongsTo()`. Taktiež je možné volať funkcie na filtrovanie záznamov napr. `where()`, `orderBy()`.
 
 ### View
+Pre zobrazenie dát sme použili framework Vue.js. Jednotlivé časti užívateľského rozhrania sú rozdelené do Vue komponentov. Komponent má 3 hlavné časti: šablónu, štýly a logiku. Pri komunikácii s laravel backendom sa používa knižnica axios, ktorá umožňuje vytvárať HTTP požiadavky na naše API.
 
 ### Controller
 V našeh aplikácii controller obsluhuje užívateľské žiadosti komunikáciou s modelmi. Controller triedy sú uložené v priečinku `app/Http/Controllers`. Každý controller rozširuje funckionalitu triedy `Illuminate\Routing\Controller`.

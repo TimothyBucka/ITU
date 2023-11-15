@@ -13,6 +13,6 @@
     "dependencies": {
         "@vitejs/plugin-vue": "^4.4.0",
         "vue": "^3.2.36",
-        "vue-router": "^4.0.13"
+        "vue-router": "^4.2.5"
     }
 }

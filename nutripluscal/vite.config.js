@@ -10,9 +10,10 @@ export default defineConfig({
         }),
         vue()
     ],
+
     resolve: {
         alias: {
-            'vue': 'vue/dist/vue.esm-bundler.js'
+            'vue': 'vue/dist/vue.esm-bundler.js',
         }
     }
 });

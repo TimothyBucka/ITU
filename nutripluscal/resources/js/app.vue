@@ -1,63 +1,45 @@
 <template>
+    <nav class="navbar navbar-expand-md bg-body-tertiary" data-bs-theme="dark">
+        <div class="container-fluid">
+            <router-link class="navbar-brand" to="/">NutriPlusCal</router-link>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <router-link class="nav-link" aria-current="page" to="/">Home</router-link> <!-- Link defined in router -->
+                    </li>
+
+                    <li class="nav-item">
+                        <router-link class="nav-link" aria-current="page" to="/stats">Statistics</router-link>
+                    </li>
+
+                    <li class="nav-item">
+                        <router-link class="nav-link" aria-current="page" to="/restaurants">Restaurants</router-link>
+                    </li>
+
+                    <li class="nav-item">
+                        <router-link class="nav-link" aria-current="page" to="/y_meals">Yours meals</router-link>
+                    </li>
+                </ul>
+            </div>
+        </div>   
+    </nav>
+
     <main class="container-md">
-        <h1>Body data</h1>
-        <div class="tiles">
-            <dataTile Name="Age" DB_name="age" :Value="data.age" Unit="" Editable=true
-                @body-data-updated="handleBodyDataUpdated" />
-            <dataTile Name="Height" DB_name="height" :Value="data.height" Unit="cm" Editable=true
-                @body-data-updated="handleBodyDataUpdated" />
-            <dataTile Name="Weight" DB_name="weight" :Value="data.weight" Unit="kg" Editable=true
-                @body-data-updated="handleBodyDataUpdated" />
-            <dataTile Name="Goal Weight" DB_name="goal_target" :Value="data.goal_target" Unit="kg" Editable=true
-                @body-data-updated="handleBodyDataUpdated" />
-            <dataTile Name="BMI" DB_name="bmi" :Value="data.bmi" Unit="" />
-        </div>
-
-        <router-link to="/page_ddx">DDX</router-link> <!-- Link defined in router -->
-        <router-view></router-view>
-
+        <router-view></router-view> <!-- this will render the active page  -->
     </main>
+
+
 </template>
 
 <script>
 import { RouterLink } from 'vue-router';
-import dataTile from './views/dataTile.vue'
 
 export default {
     components: {
-        dataTile,
         RouterLink
     },
-    data() {
-        return {
-            data: {}
-        }
-    },
-    created() {
-        this.retrieveData();
-    },
-    methods: {
-        retrieveData() {
-            const url = '/api/body/1';
-            axios.get(url).then(response => {
-                this.data = response.data.data;
-            })
-                .catch(error => {
-                    console.log(error);
-                });
-        },
-        handleBodyDataUpdated() {
-            this.retrieveData();
-        }
-    }
 }
-
 </script>
-
-<style scoped>
-.tiles {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-evenly;
-}
-</style>

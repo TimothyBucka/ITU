@@ -15,11 +15,6 @@
 </head>
 <body>
     <div id="app">
-        <nav-component 
-        :route1="'{{ route('/recipes') }}'" 
-        :route2="'{{ route('/calendar') }}'" 
-        ></nav-component>
-
         <app-component></app-component>
     </div>
 </body>

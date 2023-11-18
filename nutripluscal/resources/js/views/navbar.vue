@@ -7,12 +7,8 @@
           </button>
           <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
-              <li class="nav-item">
-                <a class="nav-link" aria-current="page" href="#">Home</a>
-              </li>
-
                 <li class="nav-item">
-                  <a class="nav-link" aria-current="page" href="route1">Recipes</a>
+                  <router-link class="nav-link" aria-current="page" to="/home">Home</router-link> <!-- Link defined in router -->
                 </li>
 
                 <li class="nav-item">
@@ -24,12 +20,12 @@
                 </li>
             </ul>
           </div>
-        </div>
+        </div>   
     </nav>
 </template>
 
 <script>
-export default {
-  props: ['route1', 'route2'],
-}
+// export default {
+//   props: ['route1', 'route2'],
+// }
 </script>

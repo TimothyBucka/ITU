@@ -1,6 +1,9 @@
 <template>
     <div>
-        <h1>DDX</h1>
+        <h1>Home</h1>
+
+
+        some other stuff ... 
     </div>
 </template>
 

@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{BodyData};
+use App\Http\Controllers\{RestaurantController};
 
 /*
 |--------------------------------------------------------------------------
@@ -19,6 +20,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+//-------------------BODY DATA-------------------//
+
 // List all of the body data
 Route::get('body', [BodyData::class, 'index']);
 
@@ -33,3 +36,11 @@ Route::put('body/{id}',  [BodyData::class, 'update']);
 
 // Delete body data
 Route::delete('body/{id}',  [BodyData::class, 'destroy']);
+
+//-------------------RESTAURANTS-------------------//
+
+// List all of the restaurants
+Route::get('restaurants', [RestaurantController::class, 'index']);
+
+// List single body data
+Route::get('restaurants/{id}',  [RestaurantController::class, 'show']);

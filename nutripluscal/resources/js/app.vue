@@ -12,7 +12,7 @@
                     </li>
 
                     <li class="nav-item">
-                        <router-link class="nav-link" aria-current="page" to="/stats">Statistics</router-link>
+                        <router-link class="nav-link" aria-current="page" to="/stats">Account</router-link>
                     </li>
 
                     <li class="nav-item">
@@ -26,7 +26,6 @@
             </div>
         </div>   
     </nav>
-
     <main class="container-md">
         <router-view></router-view> <!-- this will render the active page  -->
     </main>

@@ -1,5 +1,5 @@
 <template>
-        <h1>Body data</h1>
+        <h1 class="py-3">Body data</h1>
         
         <div class="tiles">
             <dataTile Name="Age" DB_name="age" :Value="data.age" Unit="" Editable=true

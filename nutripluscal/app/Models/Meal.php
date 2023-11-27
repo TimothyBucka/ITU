@@ -20,6 +20,7 @@ class Meal extends Model
 
     public function meals_eaten()
     {
-        return $this->hasMany(Meals_eaten::class);
+       return $this->hasMany(Meals_eaten::class, 'meal_id', 'id');
+       //return $this->belongsTo(Meals_eaten::class, 'eaten', 'id', 'meal_id');
     }
 }

@@ -2,8 +2,9 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\{BodyData};
-use App\Http\Controllers\{RestaurantController};
+use App\Http\Controllers\BodyData;
+use App\Http\Controllers\RestaurantController;
+use App\Http\Controllers\MealController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,6 +38,9 @@ Route::put('body/{id}',  [BodyData::class, 'update']);
 // Delete body data
 Route::delete('body/{id}',  [BodyData::class, 'destroy']);
 
+// Get the dates for one year ahead.
+Route::get('/generate_dates',  [BodyData::class, 'generate_dates']);
+
 //-------------------RESTAURANTS-------------------//
 
 // List all of the restaurants
@@ -44,3 +48,14 @@ Route::get('restaurants', [RestaurantController::class, 'index']);
 
 // List single body data
 Route::get('restaurants/{id}',  [RestaurantController::class, 'show']);
+
+//-------------------MEAL-------------------//
+
+// List all of the meals
+Route::get('meals', [MealController::class, 'index']);
+
+// List single meal
+Route::get('meals/{id}',  [MealController::class, 'show']);
+
+// list meals based on the date
+Route::get('meals/date/{date}',  [MealController::class, 'show_meals_based_on_date']);

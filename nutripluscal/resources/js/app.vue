@@ -12,16 +12,21 @@
                     </li>
 
                     <li class="nav-item">
-                        <router-link class="nav-link" aria-current="page" to="/stats">Account</router-link>
-                    </li>
-
-                    <li class="nav-item">
                         <router-link class="nav-link" aria-current="page" to="/restaurants">Restaurants</router-link>
                     </li>
 
                     <li class="nav-item">
                         <router-link class="nav-link" aria-current="page" to="/y_meals">Yours meals</router-link>
                     </li>
+
+                    <li class="nav-item">
+                        <router-link class="nav-link" aria-current="page" to="/calendar">Calendar</router-link>
+                    </li>
+
+                    <li class="nav-item">
+                        <router-link class="nav-link" aria-current="page" to="/account">Account</router-link>
+                    </li>
+
                 </ul>
             </div>
         </div>   
@@ -29,7 +34,6 @@
     <main class="container-md">
         <router-view></router-view> <!-- this will render the active page  -->
     </main>
-
 
 </template>
 

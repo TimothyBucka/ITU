@@ -52,9 +52,9 @@ export default {
                     console.log(error);
                 });
         },
-        handleBodyDataUpdated() {
-            this.retrieveData();
-        }
+        // handleBodyDataUpdated() {
+        //     this.retrieveData();
+        // }
     }
 }
 </script>

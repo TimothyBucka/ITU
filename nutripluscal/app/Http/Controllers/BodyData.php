@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use DateTime;
 use Illuminate\Http\Request;
 use App\Models\Body_data_model;
 use App\Http\Resources\Body_data as Body_data_resource;
@@ -29,12 +30,42 @@ class BodyData extends Controller
     }
 
     /**
+     * Get the dates for one year ahead.
+     */
+    public function generate_dates()
+    {
+        $current_date = new DateTime(); // get the date (today)
+        $start_date = clone $current_date;
+        $start_date->modify('+1 day'); // +1 day from current day
+        $end_date = clone $current_date;
+        $end_date->modify('+5 day'); // +1 year from current day
+    
+        $dates = [];
+        $currentDate = $start_date;
+        while ($currentDate <= $end_date) {
+            array_push($dates, $this->formatDate(clone $currentDate)); // clone the date and push it to the array
+            $currentDate->modify('+1 day');
+        }
+        return response()->json([
+            'dates' => $dates
+        ], 200);
+    }
+
+    /**
+     * Format the dates
+     */
+    public function formatDate($date)
+    {
+        return $date->format('l jS \of F Y'); // Monday 8 of August 2005 03:12:46 PM for example the is for escaping the chars that have special meaning in date format like e.g. "of"
+    }
+
+    /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
         $body_data = $request->isMethod('put') ?
-        Body_data_model::findOrFail($request->body_data_id) : new Body_data_model; // chceck for put req. include id of body data else create new body data
+            Body_data_model::findOrFail($request->body_data_id) : new Body_data_model; // chceck for put req. include id of body data else create new body data
 
         $body_data->id = $request->input('body_data_id');
         $body_data->height = $request->input('height');
@@ -88,7 +119,7 @@ class BodyData extends Controller
         $existing->weight = $weight ? $weight : $existing->weight;
         $existing->age = $age ? $age : $existing->age;
         $existing->goal_target = $goal_target ? $goal_target : $existing->goal_target;
-        
+
         $bmi = Body_data_model::calculateBMI($existing->height, $existing->weight);
         $existing->bmi =  $bmi ? $bmi : $existing->bmi;
 
@@ -109,7 +140,7 @@ class BodyData extends Controller
         // Get a single body data
         $body_data = Body_data_model::findOrFail($id);
 
-        if($body_data->delete()) {
+        if ($body_data->delete()) {
             return new Body_data_resource($body_data);
         } else {
             return response()->json([

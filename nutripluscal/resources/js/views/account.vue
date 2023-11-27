@@ -1,5 +1,5 @@
 <template>
-        <h1 class="py-3">Body data</h1>
+        <h1 class="py-3">Account</h1>
         
         <div class="tiles">
             <dataTile Name="Age" DB_name="age" :Value="data.age" Unit="" Editable=true
@@ -51,6 +51,6 @@ export default {
 .tiles {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-evenly;
+    justify-content: center;
 }
 </style>

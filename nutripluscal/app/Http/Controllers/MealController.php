@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Meal;
 use Illuminate\Http\Request;
+use App\Http\Resources\Meal_data as Meal_data_resource;
 
 class MealController extends Controller
 {
@@ -12,7 +13,11 @@ class MealController extends Controller
      */
     public function index()
     {
-        //
+        // Get meal data not paginated
+        $meal_data = Meal::all();
+
+        // Return coolection of meals as a resource
+        return Meal_data_resource::collection($meal_data);
     }
 
     /**
@@ -34,9 +39,28 @@ class MealController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Meal $meal)
+    public function show(string $id)
     {
-        //
+        // Get a single meal data
+        $meal_data = Meal::findOrFail($id);
+
+        // Return single body data as a resource
+        return new Meal_data_resource($meal_data);
+    }
+
+    /**
+     * Display the meals based on the date the user currently sees.
+     */
+    public function show_meals_based_on_date(string $date)
+    {
+        $meal_data = Meal::all();
+        $eaten_at_date = [];
+        foreach($meal_data as $meal)
+        {
+            $tmp = $meal->meals_eaten()->get(); // get the meals eaten based on the meal id
+            $eaten_at_date = array_merge($eaten_at_date, $tmp->where('date_of_eat', $date)->all()); // get the meals eaten based on the date
+        }
+        return $eaten_at_date;
     }
 
     /**

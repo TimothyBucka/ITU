@@ -17,8 +17,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/recipes', [UserController::class, 'show'])->name('/recipes');
-Route::get('/calendar', [UserController::class, 'show'])->name('/calendar');
+// Route::get('/recipes', [UserController::class, 'show'])->name('/recipes');
+// Route::get('/calendar', [UserController::class, 'show'])->name('/calendar');
 
 //Route::get('/', [BodyData::class, 'index']);
 

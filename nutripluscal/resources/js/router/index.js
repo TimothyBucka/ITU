@@ -1,9 +1,10 @@
 import { createRouter, createWebHistory } from "vue-router";
 
 import home from "../views/home.vue";
-import stats from "../views/stats.vue";
 import restaurants  from "../views/restaurants.vue";
 import your_meals from "../views/your_meals.vue";
+import calendar from "../views/calendar.vue";
+import account from "../views/account.vue";
 
 const routes = [
     {
@@ -12,9 +13,9 @@ const routes = [
         name: "home",
     },
     {
-        path: "/stats",
-        component: stats,
-        name: "stats",
+        path: "/account",
+        component: account,
+        name: "account",
     },
     {
         path: "/restaurants",
@@ -25,6 +26,11 @@ const routes = [
         path: "/y_meals",
         component: your_meals,
         name: "your_meals",
+    },
+    {
+        path: "/calendar",
+        component: calendar,
+        name: "calendar",
     },
 ];
 

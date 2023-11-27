@@ -9,12 +9,12 @@ class Meals_eaten extends Model
 {
     use HasFactory;
 
-    protected $table = 'meals_eaten';
+    protected $table = 'eaten';
 
     public $timestamps = false;
 
     public function meals()
     {
-        return $this->belongsTo(Meal::class);
+        return $this->belongsTo(Meal::class , 'meal_id', 'id');
     }
 }

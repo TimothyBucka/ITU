@@ -14,7 +14,7 @@ class Restaurants_data extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request); // just return all option
+        return parent::toArray($request);
     }
 
     public function with($request): array // add other stuff with the data which are returned by the toArray method

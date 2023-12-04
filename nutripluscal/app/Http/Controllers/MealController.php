@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Meal;
+use App\Models\Meals_eaten;
 use Illuminate\Http\Request;
 use App\Http\Resources\Meal_data as Meal_data_resource;
 
@@ -55,11 +56,20 @@ class MealController extends Controller
     {
         $meal_data = Meal::all();
         $eaten_at_date = [];
-        foreach($meal_data as $meal)
+        foreach($meal_data as $id => $meal)
         {
             $tmp = $meal->meals_eaten()->get(); // get the meals eaten based on the meal id
             $eaten_at_date = array_merge($eaten_at_date, $tmp->where('date_of_eat', $date)->all()); // get the meals eaten based on the date
+
         }
+
+        foreach($eaten_at_date as $id => $meal)
+        {
+            $tmp = $meal->meals()->get(); // get the meals eaten based on the meal id
+            $eaten_at_date[$id]['meal'] = $tmp->all(); // get the meals eaten based on the date
+        }
+
+   
         return $eaten_at_date;
     }
 

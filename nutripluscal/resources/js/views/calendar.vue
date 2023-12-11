@@ -1,36 +1,56 @@
 <template>
-    <h1 class="py-3">Calendar</h1>
+    <div class="container">
+        <h1 class="py-3">Calendar</h1>
 
-    <div id="carouselExample" class="carousel slide">
-        <div class="carousel-inner">
-            <div v-for="(date, index) in dates" :key="index" class="carousel-item"
-                :class="{ active: index == dates.length - 1 }">
-                <p>{{ date }}</p>
+        <div id="carouselExample" class="carousel slide">
+            <div class="carousel-inner">
+                <div v-for="(date, index) in dates" :key="index" class="carousel-item"
+                    :class="{ active: index == dates.length - 1 }">
+                    <p>{{ date }}</p>
+                </div>
             </div>
+
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev"
+                @click="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next"
+                @click="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div><br>
+
+        <div class="buttons">
+            <a class="btn btn-primary" href="#">Add Meal</a>
+            <a class="btn btn-primary" href="#">Add Activity</a>
         </div>
 
-        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev"
-            @click="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next"
-            @click="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
-        </button>
-    </div><br>
+        <div v-for="(meal, date) in meals" :key="date">
+            <div v-if="meal.length > 0">
 
-    <div v-for="(meal, date) in meals" :key="date">
-        <div v-if="meal.length > 0">
-            <ul>
-                <li v-for="(item, index) in meal" :key="index">
+                <div class="calories_stats">
+                    <div class="icon">
+                       <p>some icon</p> 
+                    </div>
+
+                    <div class="calories_accepted">
+                        <p>{{ totalCalories }}/2450 kcal</p>
+                    </div>
+
+                    <div class="percents">
+                        <p>{{ ((totalCalories/2450)*100).toFixed(1) }}%</p>
+                    </div>
+                </div>
+
+                <div v-for="(item, index) in meal" :key="index">
                     {{ item.meal[0].name }}
-                </li>
-            </ul>
-        </div>
-        <div v-else>
-            <p>No meals for this day.</p>
+                </div>
+            </div>
+            <div v-else>
+                <p>No meals for this day.</p>
+            </div>
         </div>
     </div>
 </template>
@@ -60,6 +80,16 @@ export default {
         }
     },
 
+    computed: {
+        totalCalories() {
+            let total = 0;
+            for (let item of this.meals[this.selected_date]) {
+                total += item.meal[0].calories;
+            }
+            return total;
+        },
+    },
+
     methods: {
 
         formatDate(date_string) {
@@ -71,7 +101,9 @@ export default {
             const url = '/api/generate_dates/';
             axios.get(url).then(response => {
                 this.dates = response.data.dates;
-                this.formated_date = this.formatDate(this.dates[0]);
+                this.current_index = this.dates.length - 1; // set current index to the last index
+                this.formated_date = this.formatDate(this.dates[this.current_index]); // format the last date
+
 
                 this.retrieveMeals(this.formated_date);
             })
@@ -79,7 +111,6 @@ export default {
                     console.log(error);
                 });
         },
-
 
         retrieveMeals(date) {
             this.meals = {};
@@ -107,7 +138,7 @@ export default {
             else {
                 this.current_index = 0;
             }
-         
+
             this.selected_date = this.formatDate(this.dates[this.current_index]);
             setTimeout(() => {
                 this.retrieveMeals(this.selected_date).then(() => {
@@ -147,6 +178,59 @@ export default {
 }
 
 .carousel-item {
+    text-align: center;
+}
+
+.container {
+    max-width: 90%;
+    margin: auto;
+}
+
+.carousel-inner {
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: .25rem;
+}
+
+.carousel-inner .carousel-item {
+    height: 200px;
+}
+
+.carousel-inner p {
+    display: inline-block;
+    vertical-align: middle;
+    line-height: normal;
+}
+
+.buttons{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 10px;
+    border-radius: .25rem;
+    margin-top: 2%;
+}
+
+.btn {
+    margin-right: 10px;
+}
+
+.calories_stats {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 10px;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: .25rem;
+    margin-top: 2%;
+}
+
+.calories_accepted, .percents, .icon {
+    flex: 1;
     text-align: center;
 }
 </style>

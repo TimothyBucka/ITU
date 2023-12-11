@@ -3,12 +3,12 @@
 
     <div id="carouselExample" class="carousel slide">
         <div class="carousel-inner">
-
-            <div v-for="(date, index) in dates" :key="index" class="carousel-item" :class="{ active: index == 0 }">
+            <div v-for="(date, index) in dates" :key="index" class="carousel-item"
+                :class="{ active: index == dates.length - 1 }">
                 <p>{{ date }}</p>
             </div>
-
         </div>
+
         <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev"
             @click="prev">
             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -107,12 +107,13 @@ export default {
             else {
                 this.current_index = 0;
             }
+         
             this.selected_date = this.formatDate(this.dates[this.current_index]);
             setTimeout(() => {
                 this.retrieveMeals(this.selected_date).then(() => {
                     this.can_navigate = true;
                 });
-            }, 300);
+            }, 50);
 
         },
 
@@ -131,7 +132,7 @@ export default {
                 this.retrieveMeals(this.selected_date).then(() => {
                     this.can_navigate = true;
                 });
-            }, 300);
+            }, 50);
 
         },
 

@@ -36,16 +36,18 @@ class BodyData extends Controller
     {
         $current_date = new DateTime(); // get the date (today)
         $start_date = clone $current_date;
-        $start_date->modify('+1 day'); // +1 day from current day
         $end_date = clone $current_date;
-        $end_date->modify('+5 day'); // +1 year from current day
+        $end_date->modify('-10 day'); // +1 year from current day
     
         $dates = [];
         $currentDate = $start_date;
-        while ($currentDate <= $end_date) {
+        while ($currentDate >= $end_date) {
             array_push($dates, $this->formatDate(clone $currentDate)); // clone the date and push it to the array
-            $currentDate->modify('+1 day');
+            $currentDate->modify('-1 day');
         }
+
+       $dates = array_reverse($dates); // reverse the array
+       
         return response()->json([
             'dates' => $dates
         ], 200);

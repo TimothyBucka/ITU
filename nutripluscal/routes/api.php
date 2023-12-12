@@ -59,3 +59,6 @@ Route::get('meals/{id}',  [MealController::class, 'show']);
 
 // list meals based on the date
 Route::get('meals/date/{date}',  [MealController::class, 'show_meals_based_on_date']);
+
+// Create new meal
+Route::post('meals',  [MealController::class, 'store']);

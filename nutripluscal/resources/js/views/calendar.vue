@@ -23,16 +23,15 @@
         </div><br>
 
         <div class="buttons">
-            <a class="btn btn-primary" href="#">Add Meal</a>
+            <a class="btn btn-primary" href="#" @click="addMeal">Add Meal</a>
             <a class="btn btn-primary" href="#">Add Activity</a>
         </div>
 
-        <div v-for="(meal, date) in meals" :key="date">
-            <div v-if="meal.length > 0">
-
+        <div v-if="meals[selected_date] && meals[selected_date].length > 0">
+            <div v-for="(meal, date) in meals" :key="date">
                 <div class="calories_stats">
                     <div class="icon">
-                       <p>some icon</p> 
+                        <p>some icon</p>
                     </div>
 
                     <div class="calories_accepted">
@@ -40,7 +39,7 @@
                     </div>
 
                     <div class="percents">
-                        <p>{{ ((totalCalories/2450)*100).toFixed(1) }}%</p>
+                        <p>{{ ((totalCalories / 2450) * 100).toFixed(1) }}%</p>
                     </div>
                 </div>
 
@@ -48,10 +47,25 @@
                     {{ item.meal[0].name }}
                 </div>
             </div>
-            <div v-else>
-                <p>No meals for this day.</p>
+        </div>
+        <div v-else>
+            <p>No meal for today</p>
+        </div>
+
+        <div v-if="showModal" class="modal">
+            <div class="modal-content">
+                <span class="close" @click="closeModal">&times;</span>
+                <p>Select a meal:</p>
+                <div v-for="(meal, index) in all_meals" :key="index" @click="selectMeal(meal)">
+                    <div v-if="!isMealAlreadySelected(meal)">
+                        <div class="meal-modal-div">
+                            <p>{{ meal.name }}</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+
     </div>
 </template>
 
@@ -64,9 +78,12 @@ export default {
 
             dates: [],
             meals: {},
+            all_meals: {},
             selected_date: null,
             current_index: 0,
-            can_navigate: true
+            can_navigate: true,
+            showModal: false,
+            selectedMeal: []
         }
     },
 
@@ -83,14 +100,55 @@ export default {
     computed: {
         totalCalories() {
             let total = 0;
-            for (let item of this.meals[this.selected_date]) {
-                total += item.meal[0].calories;
+            if (this.meals[this.selected_date]) {
+                for (let item of this.meals[this.selected_date]) {
+                    total += item.meal[0].calories;
+                }
             }
             return total;
         },
     },
 
     methods: {
+
+        addMeal() {
+            this.all_meals = {};
+            axios.get('/api/meals/').then(response => {
+                this.all_meals = response.data.data;
+                this.showModal = true; // show the modal with the meals
+            })
+                .catch(error => {
+                    console.log(error);
+                });
+        },
+
+        closeModal() {
+            this.showModal = false;
+        },
+
+        selectMeal(meal) {
+            // chceck if the meal is already selected by the user
+            let index = this.selectedMeal.findIndex(selectedMeal => selectedMeal.id === meal.id);
+
+            if (index === -1) {
+                this.selectedMeal.push(meal); // add the meal to the selected meals
+            } else {
+                this.selectedMeal.splice(index, 1); // remove the meal from the selected meals
+            }
+            this.meals[this.selected_date].push(meal); // add the selected meal to the meals object
+            this.showModal = false; // then close it
+        },
+
+        isMealAlreadySelected(meal_modal) { // check if the meal is already selected
+            if (this.meals[this.selected_date]) { // if there are meals for the selected date
+                for (let item of this.meals[this.selected_date]) { // loop through them
+                    if (item.meal[0].name == meal_modal.name) { // if the meal is already selected
+                        return true;
+                    }
+                }
+            }
+            return false; // not selected --> good to go
+        },
 
         formatDate(date_string) {
             const parsed_date = parse(date_string, 'EEEE do \'of\' MMMM yyyy', new Date());
@@ -104,8 +162,13 @@ export default {
                 this.current_index = this.dates.length - 1; // set current index to the last index
                 this.formated_date = this.formatDate(this.dates[this.current_index]); // format the last date
 
+                this.retrieveMeals(this.formated_date).then(() => {
+                    // no meals for current date so fetch every meal avaible
+                    if (this.meals[this.formated_date].length == 0) {
+                        this.retrieveAllMeals();
+                    }
+                });
 
-                this.retrieveMeals(this.formated_date);
             })
                 .catch(error => {
                     console.log(error);
@@ -117,16 +180,13 @@ export default {
             const url = '/api/meals/date/' + date;
             return axios.get(url).then(response => {
                 this.meals[date] = response.data; // add the meals to the meals object
-
-                this.meals[date].forEach(meal => {
-                    console.log(meal.meal[0].name);
-                });
             })
                 .catch(error => {
                     console.log(error);
                 });
         },
 
+        // Carousel buttons
         next() {
             if (!this.can_navigate) return; // to prevent double clikcing and then submiting the request twice
             this.can_navigate = false;
@@ -144,7 +204,7 @@ export default {
                 this.retrieveMeals(this.selected_date).then(() => {
                     this.can_navigate = true;
                 });
-            }, 50);
+            }, 1);
 
         },
 
@@ -163,7 +223,7 @@ export default {
                 this.retrieveMeals(this.selected_date).then(() => {
                     this.can_navigate = true;
                 });
-            }, 50);
+            }, 1);
 
         },
 
@@ -172,6 +232,49 @@ export default {
 </script>
 
 <style>
+.meal-modal-div {
+    border: 1px solid black;
+    padding: 10px;
+    margin: 10px;
+    cursor: pointer;
+}
+
+.modal {
+    display: flex;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+}
+
+.close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+
+
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
     background-color: black;
@@ -205,7 +308,7 @@ export default {
     line-height: normal;
 }
 
-.buttons{
+.buttons {
     display: flex;
     justify-content: space-around;
     align-items: center;
@@ -229,7 +332,9 @@ export default {
     margin-top: 2%;
 }
 
-.calories_accepted, .percents, .icon {
+.calories_accepted,
+.percents,
+.icon {
     flex: 1;
     text-align: center;
 }

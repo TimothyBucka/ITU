@@ -32,9 +32,30 @@ class MealController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store()
     {
         //
+    }
+
+    /**
+     * Add new meal to meal eaten.
+     */
+    public function add_meal_to_meal_eaten(Request $request)
+    {
+        $meal_eaten = new Meals_eaten;
+        $meal_eaten->portion_size = 50;
+        $meal_eaten->date_of_eat = '2023-12-03';
+        $meal_eaten->meal_id = $request->id;
+        
+        if ($meal_eaten->save()) {
+            return response()->json([
+                'message' => 'Meal added to meal eaten'
+            ], 200);
+        } else {
+            return response()->json([
+                'message' => 'Meal not added to meal eaten'
+            ], 400);
+        }
     }
 
     /**
@@ -56,20 +77,18 @@ class MealController extends Controller
     {
         $meal_data = Meal::all();
         $eaten_at_date = [];
-        foreach($meal_data as $id => $meal)
-        {
+        foreach ($meal_data as $id => $meal) {
             $tmp = $meal->meals_eaten()->get(); // get the meals eaten based on the meal id
             $eaten_at_date = array_merge($eaten_at_date, $tmp->where('date_of_eat', $date)->all()); // get the meals eaten based on the date
 
         }
 
-        foreach($eaten_at_date as $id => $meal)
-        {
+        foreach ($eaten_at_date as $id => $meal) {
             $tmp = $meal->meals()->get(); // get the meals eaten based on the meal id
             $eaten_at_date[$id]['meal'] = $tmp->all(); // get the meals eaten based on the date
         }
 
-   
+
         return $eaten_at_date;
     }
 

@@ -23,7 +23,7 @@
         </div><br>
 
         <div class="buttons">
-            <a class="btn btn-primary" href="#" @click="addMeal">Add Meal</a>
+            <a class="btn btn-primary" href="#" @click="modalGetMeals">Add Meal</a>
             <a class="btn btn-primary" href="#">Add Activity</a>
         </div>
 
@@ -56,13 +56,16 @@
             <div class="modal-content">
                 <span class="close" @click="closeModal">&times;</span>
                 <p>Select a meal:</p>
-                <div v-for="(meal, index) in all_meals" :key="index" @click="selectMeal(meal)">
-                    <div v-if="!isMealAlreadySelected(meal)">
+                <div v-for="(meal, index) in all_meals" :key="index" @click="selectMeal(meal)"
+                    @click.stop="selectMeal(meal)">
+                    <!-- click.stop to prevent prpagating click event to the parent div, without it it wont close-->
+                    <div v-if="!isMealAlreadyAdded(meal)">
                         <div class="meal-modal-div">
                             <p>{{ meal.name }}</p>
                         </div>
                     </div>
                 </div>
+                <button @click="addSelectedMeal">Add</button>
             </div>
         </div>
 
@@ -100,7 +103,7 @@ export default {
     computed: {
         totalCalories() {
             let total = 0;
-            if (this.meals[this.selected_date]) {
+            if (this.meals[this.selected_date] && this.meals[this.selected_date].length > 0) {
                 for (let item of this.meals[this.selected_date]) {
                     total += item.meal[0].calories;
                 }
@@ -111,7 +114,7 @@ export default {
 
     methods: {
 
-        addMeal() {
+        modalGetMeals() { // fetch the meals from the database to the modal
             this.all_meals = {};
             axios.get('/api/meals/').then(response => {
                 this.all_meals = response.data.data;
@@ -126,7 +129,7 @@ export default {
             this.showModal = false;
         },
 
-        selectMeal(meal) {
+        selectMeal(meal) { // select a meal from the modal
             // chceck if the meal is already selected by the user
             let index = this.selectedMeal.findIndex(selectedMeal => selectedMeal.id === meal.id);
 
@@ -135,11 +138,46 @@ export default {
             } else {
                 this.selectedMeal.splice(index, 1); // remove the meal from the selected meals
             }
-            this.meals[this.selected_date].push(meal); // add the selected meal to the meals object
-            this.showModal = false; // then close it
+            this.meals[this.selected_date].push(meal); // Add the selected meal to the meals object
         },
 
-        isMealAlreadySelected(meal_modal) { // check if the meal is already selected
+        addSelectedMeal() {
+            //this.meals[this.selected_date] = this.selectedMeal;
+
+            // add the formated sleected date to the selected meals
+            console.log("DATUM " + this.selected_date);
+            //this.selectedMeal.push({ date: this.selected_date });
+            //console.log("ARRAY in ADDSELECTEDMEAL:" + this.selectedMeal[0].id);
+
+            // Send the selected meals to the API (post request) and cycle through the array with the index from 0 to n
+            for (let i = 0; i < this.selectedMeal.length; i++) {
+                axios
+                    .post('/api/meals/eaten/', this.selectedMeal[i]).then (response => {
+                        console.log("Meal added" + response)
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    });
+            }
+
+            // axios
+            //     .post('/api/meals/eaten/', this.selectedMeal).then (response => {
+            //         console.log("Meal added"+ response)
+            //     })
+            //     .catch(error => {
+            //         console.log(error);
+            //     });
+            
+            this.selectedMeal = [];
+            this.showModal = false;
+        },
+
+        // isMealSelected(meal) {
+        //     // Check if the meal is already selected for the current date
+        //     return this.meals[this.selected_date] && this.meals[this.selected_date].some(selectedMeal => selectedMeal.meal[0].id === meal.id);
+        // },
+
+        isMealAlreadyAdded(meal_modal) { // check if the meal is already added to the date
             if (this.meals[this.selected_date]) { // if there are meals for the selected date
                 for (let item of this.meals[this.selected_date]) { // loop through them
                     if (item.meal[0].name == meal_modal.name) { // if the meal is already selected
@@ -161,14 +199,7 @@ export default {
                 this.dates = response.data.dates;
                 this.current_index = this.dates.length - 1; // set current index to the last index
                 this.formated_date = this.formatDate(this.dates[this.current_index]); // format the last date
-
-                this.retrieveMeals(this.formated_date).then(() => {
-                    // no meals for current date so fetch every meal avaible
-                    if (this.meals[this.formated_date].length == 0) {
-                        this.retrieveAllMeals();
-                    }
-                });
-
+                this.retrieveMeals(this.formated_date); // retrieve the meals for the last date
             })
                 .catch(error => {
                     console.log(error);

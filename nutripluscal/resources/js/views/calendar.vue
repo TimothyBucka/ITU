@@ -49,19 +49,18 @@
             </div>
         </div>
         <div v-else>
-            <p>No meal for today</p>
+            <p>No meals for today</p>
         </div>
 
         <div v-if="showModal" class="modal">
             <div class="modal-content">
                 <span class="close" @click="closeModal">&times;</span>
                 <p>Select a meal:</p>
-                <div v-for="(meal, index) in all_meals" :key="index" @click="selectMeal(meal)"
-                    @click.stop="selectMeal(meal)">
-                    <!-- click.stop to prevent prpagating click event to the parent div, without it it wont close-->
+                <div v-for="(meal, index) in all_meals" :key="index" @click="selectMeal(meal)">
                     <div v-if="!isMealAlreadyAdded(meal)">
                         <div class="meal-modal-div">
                             <p>{{ meal.name }}</p>
+                            <!--TODO portion size-->
                         </div>
                     </div>
                 </div>
@@ -74,6 +73,7 @@
 
 <script>
 import { parse, format } from 'date-fns';
+
 
 export default {
     data() {
@@ -113,7 +113,6 @@ export default {
     },
 
     methods: {
-
         modalGetMeals() { // fetch the meals from the database to the modal
             this.all_meals = {};
             axios.get('/api/meals/').then(response => {
@@ -142,40 +141,34 @@ export default {
         },
 
         addSelectedMeal() {
-            //this.meals[this.selected_date] = this.selectedMeal;
-
-            // add the formated sleected date to the selected meals
-            console.log("DATUM " + this.selected_date);
-            //this.selectedMeal.push({ date: this.selected_date });
-            //console.log("ARRAY in ADDSELECTEDMEAL:" + this.selectedMeal[0].id);
-
             // Send the selected meals to the API (post request) and cycle through the array with the index from 0 to n
             for (let i = 0; i < this.selectedMeal.length; i++) {
+                this.selectedMeal[i].date = this.selected_date;
                 axios
-                    .post('/api/meals/eaten/', this.selectedMeal[i]).then (response => {
-                        console.log("Meal added" + response)
+                    .post('/api/meals/eaten/', this.selectedMeal[i])
+                    .then(response => {
+                        //console.log("Meal added" + response);
+                        this.retrieveMeals(this.selected_date); // Refresh it after added to show the new data
+        
+                        this.$toast.success(response.data.message, { // notification
+                            position: 'top-right',
+                            duration: 2500,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                        });
                     })
                     .catch(error => {
                         console.log(error);
+                        this.$toast.error(response.data.message, {
+                            timeout: 2000,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                        });
                     });
             }
 
-            // axios
-            //     .post('/api/meals/eaten/', this.selectedMeal).then (response => {
-            //         console.log("Meal added"+ response)
-            //     })
-            //     .catch(error => {
-            //         console.log(error);
-            //     });
-            
-            this.selectedMeal = [];
-            this.showModal = false;
+            this.selectedMeal = []; // reset the selected meals
         },
-
-        // isMealSelected(meal) {
-        //     // Check if the meal is already selected for the current date
-        //     return this.meals[this.selected_date] && this.meals[this.selected_date].some(selectedMeal => selectedMeal.meal[0].id === meal.id);
-        // },
 
         isMealAlreadyAdded(meal_modal) { // check if the meal is already added to the date
             if (this.meals[this.selected_date]) { // if there are meals for the selected date
@@ -203,6 +196,7 @@ export default {
             })
                 .catch(error => {
                     console.log(error);
+
                 });
         },
 
@@ -268,6 +262,7 @@ export default {
     padding: 10px;
     margin: 10px;
     cursor: pointer;
+    flex: 1;
 }
 
 .modal {
@@ -287,7 +282,7 @@ export default {
     margin: auto;
     padding: 20px;
     border: 1px solid #888;
-    width: 80%;
+    width: 50%;
 }
 
 .close {

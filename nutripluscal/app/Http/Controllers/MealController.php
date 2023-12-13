@@ -42,18 +42,19 @@ class MealController extends Controller
      */
     public function add_meal_to_meal_eaten(Request $request)
     {
+
         $meal_eaten = new Meals_eaten;
         $meal_eaten->portion_size = 50;
-        $meal_eaten->date_of_eat = '2023-12-03';
+        $meal_eaten->date_of_eat = $request->date;
         $meal_eaten->meal_id = $request->id;
         
         if ($meal_eaten->save()) {
             return response()->json([
-                'message' => 'Meal added to meal eaten'
+                'message' => 'Meal added'
             ], 200);
         } else {
             return response()->json([
-                'message' => 'Meal not added to meal eaten'
+                'message' => 'Meal not added'
             ], 400);
         }
     }

@@ -31,7 +31,7 @@
             <div v-for="(meal, date) in meals" :key="date">
                 <div class="calories_stats">
                     <div class="icon">
-                        <p>some icon</p>
+                        <font-awesome-icon icon="utensils" />
                     </div>
 
                     <div class="calories_accepted">
@@ -41,10 +41,31 @@
                     <div class="percents">
                         <p>{{ ((totalCalories / 2450) * 100).toFixed(1) }}%</p>
                     </div>
-                </div>
+                </div><br>
 
                 <div v-for="(item, index) in meal" :key="index">
-                    {{ item.meal[0].name }}
+                    <div class="accordion" id="mealAccordion">
+                        <div class="accordion-item" v-for="(meal, index) in meals" :key="index">
+                            <h2 class="accordion-header" :id="'heading' + index">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    :data-bs-target="'#collapse' + index" aria-expanded="false"
+                                    :aria-controls="'collapse' + index">
+                                    {{ item.meal[0].name }}
+                                </button>
+                            </h2>
+                            <div :id="'collapse' + index" class="accordion-collapse collapse"
+                                aria-labelledby="'heading' + index" data-bs-parent="#mealAccordion">
+                                <div class="accordion-body">
+                                    <strong>Calories:</strong> {{ item.meal[0].calories }}<br>
+                                    <strong>Proteins:</strong> {{ item.meal[0].proteins }}<br>
+                                    <strong>Fibers:</strong> {{ item.meal[0].fibers }}<br>
+                                    <strong>Fats:</strong> {{ item.meal[0].fats }}<br>
+                                    <strong>Carbs:</strong> {{ item.meal[0].carbs }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
                 </div>
             </div>
         </div>
@@ -78,7 +99,6 @@ import { parse, format } from 'date-fns';
 export default {
     data() {
         return {
-
             dates: [],
             meals: {},
             all_meals: {},
@@ -149,7 +169,7 @@ export default {
                     .then(response => {
                         //console.log("Meal added" + response);
                         this.retrieveMeals(this.selected_date); // Refresh it after added to show the new data
-        
+
                         this.$toast.success(response.data.message, { // notification
                             position: 'top-right',
                             duration: 2500,
@@ -257,6 +277,7 @@ export default {
 </script>
 
 <style>
+/*----------------------------- Modal (popup) -----------------------------*/
 .meal-modal-div {
     border: 1px solid black;
     padding: 10px;
@@ -299,8 +320,7 @@ export default {
     cursor: pointer;
 }
 
-
-
+/*----------------------------- CAROUSEL -----------------------------*/
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
     background-color: black;
@@ -334,6 +354,7 @@ export default {
     line-height: normal;
 }
 
+/*----------------------------- Stats of meals (percentage...), buttons -----------------------------*/
 .buttons {
     display: flex;
     justify-content: space-around;

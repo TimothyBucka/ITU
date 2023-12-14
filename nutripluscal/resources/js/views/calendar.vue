@@ -75,22 +75,23 @@
             </div>
 
         </div>
-
-        <div v-if="showModal" class="modal">
-            <div class="modal-content">
-                <span class="close" @click="closeModal">&times;</span>
-                <p>Select a meal:</p>
-                <div v-for="(meal, index) in all_meals" :key="index" @click="selectMeal(meal)">
-                    <div v-if="!isMealAlreadyAdded(meal)">
-                        <div class="meal-modal-div">
-                            <p>{{ meal.name }}</p>
-                            <!--TODO portion size-->
+        <transition name="fade">
+                <div v-if="showModal" class="modal">
+                    <div class="modal-content">
+                        <span class="close" @click="closeModal">&times;</span>
+                        <p>Select a meal:</p>
+                        <div v-for="(meal, index) in all_meals" :key="index" @click="selectMeal(meal)">
+                            <div v-if="!isMealAlreadyAdded(meal)">
+                                <div class="meal-modal-div">
+                                    <p>{{ meal.name }}</p>
+                                    <!-- TODO portion size -->
+                                </div>
+                            </div>
                         </div>
+                        <button @click="addSelectedMeal">Add</button>
                     </div>
                 </div>
-                <button @click="addSelectedMeal">Add</button>
-            </div>
-        </div>
+        </transition>
 
     </div>
 </template>
@@ -175,14 +176,14 @@ export default {
         },
 
         closeModal() {
-            // when the meal is selected but the user closes the modal, update the meal object 
-            if (this.selectedMeal.length > 0) {
-                this.meals[this.selected_date] =
-                    this.meals[this.selected_date].filter(selectedMeal => selectedMeal.id !== this.selectedMeal[0].id); // remove the meal from the meals object
-            }
+                // when the meal is selected but the user closes the modal, update the meal object 
+                if (this.selectedMeal.length > 0) {
+                    this.meals[this.selected_date] =
+                        this.meals[this.selected_date].filter(selectedMeal => selectedMeal.id !== this.selectedMeal[0].id); // remove the meal from the meals object
+                }
 
-            this.selectedMeal = []; // reset the selected meals
-            this.showModal = false;
+                this.selectedMeal = []; // reset the selected meals
+                this.showModal = false;
         },
 
         selectMeal(meal) { // select a meal from the modal
@@ -362,6 +363,16 @@ export default {
     color: #000;
     text-decoration: none;
     cursor: pointer;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity .5s;
+}
+
+.fade-enter,
+.fade-leave-to {
+    opacity: 0;
 }
 
 /*----------------------------- CAROUSEL -----------------------------*/

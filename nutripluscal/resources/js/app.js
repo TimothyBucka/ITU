@@ -1,5 +1,4 @@
 import './bootstrap';
-
 import { createApp } from 'vue';
 import router from './router'
 import App from './app.vue';
@@ -8,7 +7,7 @@ import 'vue-toast-notification/dist/theme-bootstrap.css';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faUtensils } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { OnClickOutside } from '@vueuse/components';
+import { OnClickOutside } from '@vueuse/components'; 
 
 const app = createApp({});
 

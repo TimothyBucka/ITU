@@ -48,13 +48,16 @@ class MealController extends Controller
         $meal_eaten->date_of_eat = $request->date;
         $meal_eaten->meal_id = $request->id;
         
+        // get the name of the meal
+        $meal_name = Meal::findOrFail($request->id)->name;
+
         if ($meal_eaten->save()) {
             return response()->json([
-                'message' => 'Meal added'
+                'message' => $meal_name.' added'
             ], 200);
         } else {
             return response()->json([
-                'message' => 'Meal not added'
+                'message' => $meal_name.' not added'
             ], 400);
         }
     }
@@ -89,7 +92,6 @@ class MealController extends Controller
             $eaten_at_date[$id]['meal'] = $tmp->all(); // get the meals eaten based on the date
         }
 
-
         return $eaten_at_date;
     }
 
@@ -112,8 +114,19 @@ class MealController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Meal $meal)
+    public function remove_meal_from_meal_eaten(string $id)
     {
-        //
+        $meal_eaten = Meals_eaten::findOrFail($id);
+        $meal_name = Meal::findOrFail($meal_eaten->meal_id)->name;
+        if ($meal_eaten->delete()) {
+            return response()->json([
+                // instead of Meal add the meal name to the message
+                'message' => $meal_name.' deleted'
+            ], 200);
+        } else {
+            return response()->json([
+                'message' => $meal_name.' not deleted'
+            ], 400);
+        }
     }
 }

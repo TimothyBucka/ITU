@@ -27,7 +27,6 @@
             <a class="btn btn-primary" href="#">Add Activity</a>
         </div>
 
-
         <div v-for="(meal, date) in meals" :key="date">
             <div class="calories_stats">
                 <div class="icon">
@@ -45,22 +44,30 @@
 
             <div v-for="(item, index) in meal" :key="index">
                 <div class="accordion" id="mealAccordion">
-                    <div class="accordion-item" v-for="(meal, index) in meals" :key="index">
+                    <div class="accordion-item">
                         <h2 class="accordion-header" :id="'heading' + index">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                 :data-bs-target="'#collapse' + index" aria-expanded="false"
                                 :aria-controls="'collapse' + index">
-                                {{ item.meal[0].name }}
+                                <div v-if="item.meals != undefined || item.meal != null">
+                                    {{ item.meal[0].name }}
+                                </div>
                             </button>
                         </h2>
                         <div :id="'collapse' + index" class="accordion-collapse collapse"
-                            aria-labelledby="'heading' + index" data-bs-parent="#mealAccordion">
+                            aria-labelledby="'heading' + index"
+                            :data-bs-parent="isActive === index ? '#mealAccordion' : null">
                             <div class="accordion-body">
-                                <strong>Calories:</strong> {{ item.meal[0].calories }}<br>
-                                <strong>Proteins:</strong> {{ item.meal[0].proteins }}<br>
-                                <strong>Fibers:</strong> {{ item.meal[0].fibers }}<br>
-                                <strong>Fats:</strong> {{ item.meal[0].fats }}<br>
-                                <strong>Carbs:</strong> {{ item.meal[0].carbs }}
+                                <div v-if="item.meals != undefined || item.meal != null">
+                                    <div class="buttons">
+                                        <a class="btn btn-primary" href="#" @click="delete_meal(item.id)">Delete</a>
+                                    </div>
+                                    <strong>Calories:</strong> {{ item.meal[0].calories }}<br>
+                                    <strong>Proteins:</strong> {{ item.meal[0].proteins }}<br>
+                                    <strong>Fibers:</strong> {{ item.meal[0].fibers }}<br>
+                                    <strong>Fats:</strong> {{ item.meal[0].fats }}<br>
+                                    <strong>Carbs:</strong> {{ item.meal[0].carbs }}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -107,6 +114,7 @@ export default {
 
     created() { // when the component is created
         this.retrieveData();
+
     },
 
     watch: {
@@ -118,9 +126,13 @@ export default {
     computed: {
         totalCalories() {
             let total = 0;
-            if (this.meals[this.selected_date] && this.meals[this.selected_date].length > 0) {
+            if (this.meals[this.selected_date] && this.meals != undefined) {
                 for (let item of this.meals[this.selected_date]) {
-                    total += item.meal[0].calories;
+                    if (Array.isArray(item.meal) && item.meal.length > 0) { // chceck if there is something in the field
+                        total += item.meal[0].calories;
+                    } else {
+                        break;
+                    }
                 }
             }
             return total;
@@ -128,10 +140,37 @@ export default {
     },
 
     methods: {
+        delete_meal(meal_id) { // delete meal from the database
+            //meal_id = this.meals[this.selected_date][0].meal[0].id;
+            console.log("ID IS" + this.meal_id);
+            axios
+                .post('/api/meals/eaten/delete/' + meal_id)
+                .then(response => {
+                    this.retrieveMeals(this.selected_date); // Refresh it after added to show the new data
+
+                    this.$toast.success(response.data.message, { // notification
+                        position: 'top-right',
+                        duration: 2500,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                    });
+                })
+                .catch(error => {
+                    console.log(error);
+                    this.$toast.error(response.data.message, {
+                        timeout: 2000,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                    });
+                });
+        },
+
+
         modalGetMeals() { // fetch the meals from the database to the modal
             this.all_meals = {};
             axios.get('/api/meals/').then(response => {
                 this.all_meals = response.data.data;
+                //filter
                 this.showModal = true; // show the modal with the meals
             })
                 .catch(error => {
@@ -140,7 +179,17 @@ export default {
         },
 
         closeModal() {
+            // when the meal is selected but the user closes the modal, update the meal object 
+            if (this.selectedMeal.length > 0) {
+                this.meals[this.selected_date] =
+                    this.meals[this.selected_date].filter(selectedMeal => selectedMeal.id !== this.selectedMeal[0].id); // remove the meal from the meals object
+            }
+
+            this.selectedMeal = []; // reset the selected meals
+
+
             this.showModal = false;
+
         },
 
         selectMeal(meal) { // select a meal from the modal
@@ -149,10 +198,16 @@ export default {
 
             if (index === -1) {
                 this.selectedMeal.push(meal); // add the meal to the selected meals
+
+                if (!this.meals[this.selected_date]) {
+                    this.meals[this.selected_date] = [];
+                }
+                this.meals[this.selected_date].push(meal); // Add the selected meal to the meals object
+
             } else {
-                this.selectedMeal.splice(index, 1); // remove the meal from the selected meals
+                this.selectedMeal = this.selectedMeal.filter(selectedMeal => selectedMeal.id !== meal.id); // remove the meal from the selected meals
+                this.meals[this.selected_date] = this.meals[this.selected_date].filter(selectedMeal => selectedMeal.id !== meal.id); // remove the meal from the meals object
             }
-            this.meals[this.selected_date].push(meal); // Add the selected meal to the meals object
         },
 
         addSelectedMeal() {
@@ -162,7 +217,6 @@ export default {
                 axios
                     .post('/api/meals/eaten/', this.selectedMeal[i])
                     .then(response => {
-                        //console.log("Meal added" + response);
                         this.retrieveMeals(this.selected_date); // Refresh it after added to show the new data
 
                         this.$toast.success(response.data.message, { // notification
@@ -188,8 +242,10 @@ export default {
         isMealAlreadyAdded(meal_modal) { // check if the meal is already added to the date
             if (this.meals[this.selected_date]) { // if there are meals for the selected date
                 for (let item of this.meals[this.selected_date]) { // loop through them
-                    if (item.meal[0].name == meal_modal.name) { // if the meal is already selected
-                        return true;
+                    if (Array.isArray(item.meal) && item.meal.length > 0) { // if the meal is already selected
+                        if (item.meal[0].name == meal_modal.name) {
+                            return true; // selected --> don't show it
+                        }
                     }
                 }
             }

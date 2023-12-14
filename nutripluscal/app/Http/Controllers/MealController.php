@@ -16,6 +16,8 @@ class MealController extends Controller
     {
         // Get meal data not paginated
         $meal_data = Meal::all();
+        // get the meals that are not from restaurants
+        $meal_data = $meal_data->where('restaurant_id', null)->all();
 
         // Return coolection of meals as a resource
         return Meal_data_resource::collection($meal_data);
@@ -80,6 +82,8 @@ class MealController extends Controller
     public function show_meals_based_on_date(string $date)
     {
         $meal_data = Meal::all();
+
+        $meal_data = $meal_data->where('restaurant_id', null)->all(); //
         $eaten_at_date = [];
         foreach ($meal_data as $id => $meal) {
             $tmp = $meal->meals_eaten()->get(); // get the meals eaten based on the meal id

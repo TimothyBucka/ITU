@@ -114,16 +114,15 @@ export default {
 
     created() { // when the component is created
         this.retrieveData();
-
     },
 
-    watch: {
+    watch: { // watch is for the asynchronous operations in response for the data change
         current_date(new_date) {
             this.selected_date = new_date;
         }
     },
 
-    computed: {
+    computed: { // computed is for the data that is calculated from the data that is already in the component
         totalCalories() {
             let total = 0;
             if (this.meals[this.selected_date] && this.meals != undefined) {
@@ -141,12 +140,10 @@ export default {
 
     methods: {
         delete_meal(meal_id) { // delete meal from the database
-            //meal_id = this.meals[this.selected_date][0].meal[0].id;
-            console.log("ID IS" + this.meal_id);
             axios
                 .post('/api/meals/eaten/delete/' + meal_id)
                 .then(response => {
-                    this.retrieveMeals(this.selected_date); // Refresh it after added to show the new data
+                    this.retrieveMeals(this.selected_date); // refresh it after added to show the new data
 
                     this.$toast.success(response.data.message, { // notification
                         position: 'top-right',
@@ -164,7 +161,6 @@ export default {
                     });
                 });
         },
-
 
         modalGetMeals() { // fetch the meals from the database to the modal
             this.all_meals = {};
@@ -186,10 +182,7 @@ export default {
             }
 
             this.selectedMeal = []; // reset the selected meals
-
-
             this.showModal = false;
-
         },
 
         selectMeal(meal) { // select a meal from the modal

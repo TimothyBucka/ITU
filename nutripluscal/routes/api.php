@@ -62,3 +62,6 @@ Route::get('meals/date/{date}',  [MealController::class, 'show_meals_based_on_da
 
 // Add meal to meal eaten
 Route::post('meals/eaten',  [MealController::class, 'add_meal_to_meal_eaten']);
+
+// Remove meal from meal eaten
+Route::post('meals/eaten/delete/{id}',  [MealController::class, 'remove_meal_from_meal_eaten']);

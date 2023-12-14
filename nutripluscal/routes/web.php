@@ -17,6 +17,22 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/restaurants', function () {
+    return view('welcome');
+});
+
+Route::get('/y_meals', function () {
+    return view('welcome');
+});
+
+Route::get('/calendar', function () {
+    return view('welcome');
+});
+
+Route::get('/account', function () {
+    return view('welcome');
+});
+
 // Route::get('/recipes', [UserController::class, 'show'])->name('/recipes');
 // Route::get('/calendar', [UserController::class, 'show'])->name('/calendar');
 

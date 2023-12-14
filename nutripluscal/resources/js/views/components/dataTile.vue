@@ -1,24 +1,22 @@
 <template>
-    <div
-        class="tile p-2 m-2"
-        @mouseenter="showEditButton"
-        @mouseleave="hideEditButton"
-    >
-        {{ Name }}
-        <div class="value" v-if="edit">
-            <input type="number" class="form-control me-1" v-model="Value" />
-            {{ Unit }}
+    <OnClickOutside @trigger="clickedOut">
+        <div class="tile p-2 m-2" @mouseenter="showEditButton" @mouseleave="hideEditButton" @mousedown="tileClicked">
+            {{ Name }}
+            <div class="value" v-if="edit">
+                <input type="number" class="form-control me-1" v-model="changeValue" />
+                {{ Unit }}
+            </div>
+            <div class="value" v-else>
+                <span class="me-1">{{ Value }}</span> {{ Unit }}
+            </div>
+            <button v-if="button === 'Edit' && Editable" @click="toggleEditMode">
+                Edit
+            </button>
+            <button v-else-if="button === 'Save' && Editable" @click="saveChanges">
+                Save
+            </button>
         </div>
-        <div class="value" v-else>
-            <span class="me-1">{{ Value }}</span> {{ Unit }}
-        </div>
-        <button v-if="button === 'Edit' && Editable" @click="toggleEditMode">
-            Edit
-        </button>
-        <button v-else-if="button === 'Save' && Editable" @click="saveChanges">
-            Save
-        </button>
-    </div>
+    </OnClickOutside>
 </template>
 
 <script scoped>
@@ -31,9 +29,20 @@ export default {
         return {
             edit: false,
             button: "",
+            changeValue: this.Value,
         };
     },
     methods: {
+        tileClicked() {
+            if (!this.edit) {
+                this.button = "Edit";
+            }
+        },
+        clickedOut() {
+            this.edit = false;
+            this.button = "";
+            this.changeValue = this.Value;
+        },
         showEditButton() {
             if (!this.edit) {
                 this.button = "Edit";
@@ -49,14 +58,14 @@ export default {
             this.button = "Save";
         },
         saveChanges() {
-            if (this.Value <= 0) {
+            if (this.changeValue <= 0) {
                 alert("Invalid value");
                 return;
             }
 
             axios
                 .put("/api/body/1", {
-                    [this.DB_name]: this.Value,
+                    [this.DB_name]: this.changeValue,
                 })
                 .then(() => {
                     this.$emit("body-data-updated");

@@ -8,14 +8,14 @@
                 @body-data-updated="handleBodyDataUpdated" />
             <dataTile Name="Weight" DB_name="weight" :Value="data.weight" Unit="kg" Editable=true
                 @body-data-updated="handleBodyDataUpdated" />
-            <dataTile Name="Goal Weight" DB_name="goal_target" :Value="data.goal_target" Unit="kg" Editable=true
+            <dataTile Name="Target Weight" DB_name="goal_target" :Value="data.goal_target" Unit="kg" Editable=true
                 @body-data-updated="handleBodyDataUpdated" />
             <dataTile Name="BMI" DB_name="bmi" :Value="data.bmi" Unit="" />
         </div>
 </template>
 
 <script>
-import dataTile from './dataTile.vue'
+import dataTile from './components/dataTile.vue'
 
 export default {
     components: {

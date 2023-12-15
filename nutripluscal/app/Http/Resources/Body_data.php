@@ -14,17 +14,7 @@ class Body_data extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        //return parent::toArray($request); // just return all option
-        return [
-            'id' => $this->id,
-            'weight' => $this->weight,
-            'height' => $this->height,
-            'age' => $this->age,
-            'goal_target' => $this->goal_target,
-            'bmi' => $this->bmi,
-            'date' => $this->date,
-            'user_id' => $this->user_id,
-        ];
+        return parent::toArray($request);
     }
 
     public function with($request): array // add other stuff with the data which are returned by the toArray method

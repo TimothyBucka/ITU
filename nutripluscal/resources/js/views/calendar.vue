@@ -1,78 +1,77 @@
 <template>
     <h1 class="py-3">Calendar</h1>
-    <div class="container">
 
-        <div id="carouselExample" class="carousel slide">
-            <div class="carousel-inner">
-                <div v-for="(date, index) in dates" :key="index" class="carousel-item"
-                    :class="{ active: index == dates.length - 1 }">
-                    <p>{{ date }}</p>
-                </div>
+    <div id="carouselExample" class="carousel slide">
+        <div class="carousel-inner">
+            <div v-for="(date, index) in dates" :key="index" class="carousel-item"
+                :class="{ active: index == dates.length - 1 }">
+                <p>{{ date }}</p>
             </div>
-
-            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev"
-                @click="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next"
-                @click="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Next</span>
-            </button>
-        </div><br>
-
-        <div class="buttons">
-            <a class="btn btn-primary" href="#" @click="modalGetMeals">Add Meal</a>
-            <a class="btn btn-primary" href="#">Add Activity</a>
         </div>
 
-        <div v-for="(meal, date) in meals" :key="date">
-            <div class="calories_stats">
-                <div class="icon">
-                    <font-awesome-icon icon="utensils" />
-                </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev"
+            @click="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next"
+            @click="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div><br>
 
-                <div class="calories_accepted">
-                    <p>{{ totalCalories }}/2450 kcal</p>
-                </div>
+    <div class="buttons">
+        <a class="btn btn-primary" href="#" @click="modalGetMeals">Add Meal</a>
+        <a class="btn btn-primary" href="#">Add Activity</a>
+    </div>
 
-                <div class="percents">
-                    <p>{{ ((totalCalories / 2450) * 100).toFixed(1) }}%</p>
-                </div>
-            </div><br>
+    <div v-for="(meal, date) in meals" :key="date">
+        <div class="calories_stats">
+            <div class="icon">
+                <font-awesome-icon icon="utensils" />
+            </div>
 
-            <div v-for="(item, index) in meal" :key="index">
-                <div class="accordion" id="mealAccordion">
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" :id="'heading' + index">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                :data-bs-target="'#collapse' + index" aria-expanded="false"
-                                :aria-controls="'collapse' + index">
-                                <div v-if="item.meals != undefined || item.meal != null">
-                                    {{ item.meal[0].name }}
+            <div class="calories_accepted">
+                <p>{{ totalCalories }}/{{ daily_intake }} kcal</p>
+            </div>
+
+            <div class="percents">
+                <p>{{ ( (daily_intake ? (totalCalories / daily_intake) : 0) * 100).toFixed(1) }}%</p>
+            </div>
+        </div><br>
+
+        <div v-for="(item, index) in meal" :key="index">
+            <div class="accordion" id="mealAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" :id="'heading' + index">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            :data-bs-target="'#collapse' + index" aria-expanded="false"
+                            :aria-controls="'collapse' + index">
+                            <div v-if="item.meals != undefined || item.meal != null">
+                                {{ item.meal[0].name }}
+                            </div>
+                        </button>
+                    </h2>
+                    <div :id="'collapse' + index" class="accordion-collapse collapse"
+                        aria-labelledby="'heading' + index"
+                        :data-bs-parent="isActive === index ? '#mealAccordion' : null">
+                        <div class="accordion-body">
+                            <div v-if="item.meals != undefined || item.meal != null">
+                                <div class="buttons">
+                                    <a class="btn btn-primary" href="#" @click="delete_meal(item.id)">Delete</a>
                                 </div>
-                            </button>
-                        </h2>
-                        <div :id="'collapse' + index" class="accordion-collapse collapse"
-                            aria-labelledby="'heading' + index"
-                            :data-bs-parent="isActive === index ? '#mealAccordion' : null">
-                            <div class="accordion-body">
-                                <div v-if="item.meals != undefined || item.meal != null">
-                                    <div class="buttons">
-                                        <a class="btn btn-primary" href="#" @click="delete_meal(item.id)">Delete</a>
-                                    </div>
-                                    <strong>Calories:</strong> {{ item.meal[0].calories }}<br>
-                                    <strong>Proteins:</strong> {{ item.meal[0].proteins }}<br>
-                                    <strong>Fibers:</strong> {{ item.meal[0].fibers }}<br>
-                                    <strong>Fats:</strong> {{ item.meal[0].fats }}<br>
-                                    <strong>Carbs:</strong> {{ item.meal[0].carbs }}
-                                </div>
+                                <strong>Calories:</strong> {{ item.meal[0].calories }}<br>
+                                <strong>Proteins:</strong> {{ item.meal[0].proteins }}<br>
+                                <strong>Fibers:</strong> {{ item.meal[0].fibers }}<br>
+                                <strong>Fats:</strong> {{ item.meal[0].fats }}<br>
+                                <strong>Carbs:</strong> {{ item.meal[0].carbs }}
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
         </div>
         <transition name="fade">
@@ -95,7 +94,6 @@
             </div>
         </transition>
 
-    </div>
 </template>
 
 <script>
@@ -105,6 +103,7 @@ export default {
     data() {
         return {
             dates: [],
+            daily_intake: 0,
             meals: {},
             all_meals: {},
             selected_date: null,
@@ -257,17 +256,22 @@ export default {
         },
 
         retrieveData() {
-            const url = '/api/generate_dates/';
+            var url = '/api/generate_dates/';
             axios.get(url).then(response => {
                 this.dates = response.data.dates;
                 this.current_index = this.dates.length - 1; // set current index to the last index
                 this.formated_date = this.formatDate(this.dates[this.current_index]); // format the last date
                 this.retrieveMeals(this.formated_date); // retrieve the meals for the last date
             })
-                .catch(error => {
-                    console.log(error);
+            .catch(error => {
+                console.log(error);
 
-                });
+            });
+
+            var url = '/api/body/1';
+            axios.get(url).then(response => {
+                this.daily_intake = response.data.data.daily_intake;
+            });
         },
 
         retrieveMeals(date) {

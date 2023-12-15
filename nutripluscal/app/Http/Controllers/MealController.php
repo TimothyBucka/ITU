@@ -16,6 +16,8 @@ class MealController extends Controller
     {
         // Get meal data not paginated
         $meal_data = Meal::all();
+        // get the meals that are not from restaurants
+        $meal_data = $meal_data->where('restaurant_id', null)->all();
 
         // Return coolection of meals as a resource
         return Meal_data_resource::collection($meal_data);
@@ -30,11 +32,37 @@ class MealController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly crated meal.
      */
-    public function store()
+    public function store(Request $request)
     {
-        //
+        $meal = new Meal;
+        $meal->name = $request->name;
+        $meal->calories = $request->calories;
+        $meal->proteins = $request->proteins;
+        $meal->carbs = $request->carbs;
+        $meal->fats = $request->fats;
+        $meal->fibers = $request->fibers;
+        $meal->photo_path = $request->photo_path; // TODO: add photo path
+        $meal->restaurant_id = null;
+
+        //check if the meal already exists
+        $meal_exists = Meal::where('name', $meal->name)->first();
+        if ($meal_exists) {
+            return response()->json([
+                'message' => $meal->name.' already exists'
+            ], 400);
+        }
+
+        if ($meal->save()) {
+            return response()->json([
+                'message' => $meal->name.' created'
+            ], 200);
+        } else {
+            return response()->json([
+                'message' => $meal->name.' not created'
+            ], 400);
+        }
     }
 
     /**
@@ -80,6 +108,7 @@ class MealController extends Controller
     public function show_meals_based_on_date(string $date)
     {
         $meal_data = Meal::all();
+        //$meal_data = $meal_data->where('restaurant_id', null)->all(); //
         $eaten_at_date = [];
         foreach ($meal_data as $id => $meal) {
             $tmp = $meal->meals_eaten()->get(); // get the meals eaten based on the meal id

@@ -68,7 +68,7 @@ class BodyData extends Controller
     {
         $body_data = $request->isMethod('put') ?
             Body_data_model::findOrFail($request->body_data_id) : new Body_data_model; // chceck for put req. include id of body data else create new body data
-
+        
         $body_data->id = $request->input('body_data_id');
         $body_data->height = $request->input('height');
         $body_data->weight = $request->input('weight');

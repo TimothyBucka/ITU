@@ -88,7 +88,7 @@ export default {
 
             if (hasNegative) {
                 this.$toast.error('All digit params must be positive numbers', {
-                    position: 'top-right',
+                    position: 'bottom-right',
                     timeout: 2000,
                     closeOnClick: true,
                     pauseOnHover: true,
@@ -100,7 +100,7 @@ export default {
                 .post('/api/create/meal/', this.mealParams)
                 .then(response => {
                     this.$toast.success(response.data.message, { // notification
-                        position: 'top-right',
+                        position: 'bottom-right',
                         duration: 2500,
                         closeOnClick: true,
                         pauseOnHover: true,
@@ -111,7 +111,7 @@ export default {
                 .catch(error => {
                     console.log(error);
                     this.$toast.error(error.response.data.message, {
-                        position: 'top-right',
+                        position: 'bottom-right',
                         timeout: 2000,
                         closeOnClick: true,
                         pauseOnHover: true,

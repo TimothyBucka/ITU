@@ -48,7 +48,7 @@ export default {
             this.retrieveData();
 
             this.$toast.success("Data updated", { // notification
-                position: 'top-right',
+                position: 'bottom-right',
                 duration: 2500,
                 closeOnClick: true,
                 pauseOnHover: true,

@@ -23,7 +23,6 @@
 
     <div class="buttons">
         <a class="btn btn-primary" href="#" @click="modalGetMeals">Add Meal</a>
-        <a class="btn btn-primary" href="#">Add Activity</a>
     </div>
 
     <div v-for="(meal, date) in meals" :key="date">
@@ -49,7 +48,7 @@
                             :data-bs-target="'#collapse' + index" aria-expanded="false"
                             :aria-controls="'collapse' + index">
                             <div v-if="item.meals != undefined || item.meal != null">
-                                {{ item.meal[0].name }}
+                                {{ item.meal[0].name }} ({{ item.meal[0].calories }} kcal)
                             </div>
                         </button>
                     </h2>
@@ -58,14 +57,14 @@
                         :data-bs-parent="isActive === index ? '#mealAccordion' : null">
                         <div class="accordion-body">
                             <div v-if="item.meals != undefined || item.meal != null">
-                                <div class="buttons">
-                                    <a class="btn btn-primary" href="#" @click="delete_meal(item.id)">Delete</a>
-                                </div>
                                 <strong>Calories:</strong> {{ item.meal[0].calories }}<br>
                                 <strong>Proteins:</strong> {{ item.meal[0].proteins }}<br>
                                 <strong>Fibers:</strong> {{ item.meal[0].fibers }}<br>
                                 <strong>Fats:</strong> {{ item.meal[0].fats }}<br>
                                 <strong>Carbs:</strong> {{ item.meal[0].carbs }}
+                                <div class="buttons">
+                                    <a class="btn btn-warning" href="#" @click="delete_meal(item.id)">Delete</a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -149,7 +148,7 @@ export default {
                     this.retrieveMeals(this.selected_date); // refresh it after added to show the new data
 
                     this.$toast.success(response.data.message, { // notification
-                        position: 'top-right',
+                        position: 'bottom-right',
                         duration: 2500,
                         closeOnClick: true,
                         pauseOnHover: true,
@@ -158,7 +157,7 @@ export default {
                 .catch(error => {
                     console.log(error);
                     this.$toast.error(response.data.message, {
-                        position: 'top-right',
+                        position: 'bottom-right',
                         timeout: 2000,
                         closeOnClick: true,
                         pauseOnHover: true,
@@ -217,7 +216,7 @@ export default {
                         this.retrieveMeals(this.selected_date); // Refresh it after added to show the new data
 
                         this.$toast.success(response.data.message, { // notification
-                            position: 'top-right',
+                            position: 'bottom-right',
                             duration: 2500,
                             closeOnClick: true,
                             pauseOnHover: true,
@@ -228,7 +227,7 @@ export default {
                     .catch(error => {
                         console.log(error);
                         this.$toast.error(response.data.message, {
-                            position: 'top-right',
+                            position: 'bottom-right',
                             timeout: 2000,
                             closeOnClick: true,
                             pauseOnHover: true,
@@ -334,6 +333,7 @@ export default {
 
 <style scoped>
 /*----------------------------- Modal (popup) -----------------------------*/
+
 .modal {
     display: flex;
     position: fixed;
@@ -346,12 +346,21 @@ export default {
     background-color: rgba(0, 0, 0, 0.4);
 }
 
+.modal button {
+    background-color: #556B2F;
+    border: none;
+    border-radius: 2px;
+    padding: 0.35em;
+    color: #ffffff;
+}
+
 .modal-content {
-    background-color: #fefefe;
+    background-color: #ffffff;
     margin: auto;
     padding: 20px;
+    padding-top: 0;
     border: 1px solid #888;
-    width: 50%;
+    width: 80%;
 }
 
 .meal-list {
@@ -368,10 +377,15 @@ export default {
 }
 
 .close {
-    color: #aaaaaa;
+    color: #a30707;
     float: right;
-    font-size: 28px;
+    font-size: 40px;
     font-weight: bold;
+    max-width: 45px;
+    max-height: 45px;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
 }
 
 .close:hover,
@@ -443,11 +457,17 @@ export default {
     display: flex;
     justify-content: space-around;
     align-items: center;
-    padding: 10px;
-    background: #f8f9fa;
+    padding: 10px 0;
+    background: #647c58;
     border: 1px solid #dee2e6;
     border-radius: .25rem;
     margin-top: 2%;
+    color: white;
+    font-size: 23px;
+}
+
+.calories_stats p {
+    margin: 0;
 }
 
 .calories_accepted,

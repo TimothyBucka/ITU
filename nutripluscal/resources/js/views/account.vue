@@ -1,6 +1,4 @@
 <template>
-    <h1 class="py-3">Account</h1>
-
     <div class="intake">
         Suggested daily intake:
         <span>{{ data.daily_intake }} kcal</span>
@@ -66,7 +64,8 @@ export default {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    margin-bottom: 1.5rem;
+    margin: 1.5rem 0;
+    font-size: 1.35rem;
 }
 
 .intake span {

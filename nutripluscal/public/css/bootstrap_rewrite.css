@@ -20,6 +20,7 @@
 
 }
 
+
 .btn-warning {
     background-color: #b60707bb !important;
     color: white !important;
@@ -28,3 +29,21 @@
     border-radius: 2px;
 }
 
+/***************************** NAVBAR ****************************/
+
+.navbar.bg-body-tertiary {
+    background-color: #556B2F !important;
+}
+
+#logo {
+    width: 2.6em;
+    height: 3.1em;
+}
+
+.navbar-brand {
+    margin-left: 0.5em;
+    font-size: 1.5em;
+    vertical-align: middle;
+}
+
+/*****************************************************************/

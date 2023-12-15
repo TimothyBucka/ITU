@@ -139,9 +139,9 @@ export default {
                 }
             }
 
-            if (has_negative) {
+            if (has_Negative) {
                 this.$toast.error('Digit parameters must be positive numbers', {
-                    position: 'top-right',
+                    position: 'bottom-right',
                     timeout: 2000,
                     closeOnClick: true,
                     pauseOnHover: true,
@@ -155,7 +155,7 @@ export default {
                     this.showCreatedMeals(); // refresh the page when the meal is added
 
                     this.$toast.success(response.data.message, { // notification
-                        position: 'top-right',
+                        position: 'bottom-right',
                         duration: 2500,
                         closeOnClick: true,
                         pauseOnHover: true,
@@ -165,7 +165,7 @@ export default {
                 .catch(error => {
                     console.log(error);
                     this.$toast.error(error.response.data.message, {
-                        position: 'top-right',
+                        position: 'bottom-right',
                         timeout: 2000,
                         closeOnClick: true,
                         pauseOnHover: true,
@@ -180,6 +180,32 @@ export default {
                     this.showCreatedMeals(); // refresh the page when the meal is updated
 
                     this.$toast.success(response.data.message, { // notification
+                        position: 'bottom-right',
+                        duration: 2500,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                    });
+                    this.closeModal();
+                })
+                .catch(error => {
+                    console.log(error);
+                    this.$toast.error(error.response.data.message, {
+                        position: 'bottom-right',
+                        timeout: 2000,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                    });
+                });
+
+        },
+
+        deleteCreatedMeal(meal_id) {
+            axios
+                .post('/api/meals/delete/' + meal_id)
+                .then(response => {
+                    this.showCreatedMeals(this.selected_date); // refresh it after added to show the new data
+
+                    this.$toast.success(response.data.message, { // notification
                         position: 'top-right',
                         duration: 2500,
                         closeOnClick: true,
@@ -196,7 +222,6 @@ export default {
                         pauseOnHover: true,
                     });
                 });
-
         },
 
         deleteCreatedMeal(meal_id) {
@@ -248,10 +273,6 @@ export default {
                 this.showCreatedMeals();
             }
         }
-
-
-
-
     }
     // kontrolsa pri edite aj na zaklade ostatnych paramterov ci je to validne
     // obrazky pre jedla, jak pri create, dat moznost pridania obrazkov tak aj ich zobrazenie v ol liste

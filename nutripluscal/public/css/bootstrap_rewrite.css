@@ -3,10 +3,27 @@
     background-color: black;
 }
 
-.carousel-control-prev {
-    left: -65px;
+.btn-primary {
+    background-color: #556B2F !important;
+    border: none !important;
+    padding: 0.5em 2em !important;
+    border-radius: 2px;
 }
 
-.carousel-control-next {
-    right: -65px;
+.accordion-button:focus {
+    box-shadow: none !important;
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: #eaeaec;
+    color: black;
+
+}
+
+.btn-warning {
+    background-color: #b60707bb !important;
+    color: white !important;
+    border: none !important;
+    padding: 0.5em 2em !important;
+    border-radius: 2px;
 }

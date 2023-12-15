@@ -124,6 +124,8 @@ class BodyData extends Controller
 
         $bmi = Body_data_model::calculateBMI($existing->height, $existing->weight);
         $existing->bmi =  $bmi ? $bmi : $existing->bmi;
+        $daily_intake = Body_data_model::calculateDailyIntake($existing->height, $existing->weight, $existing->age, $existing->goal_target);
+        $existing->daily_intake =  $daily_intake ? $daily_intake : $existing->daily_intake;
 
         if ($existing->save()) {
             return $existing;

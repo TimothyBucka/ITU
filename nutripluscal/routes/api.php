@@ -51,7 +51,7 @@ Route::get('restaurants/{id}',  [RestaurantController::class, 'show']);
 
 //-------------------MEAL-------------------//
 
-// List all of the meals (for future use)
+// List all of the meals
 Route::get('meals', [MealController::class, 'index']);
 
 // List single meal (for future use)
@@ -66,5 +66,11 @@ Route::post('meals/eaten',  [MealController::class, 'add_meal_to_meal_eaten']);
 // Remove meal from meal eaten
 Route::post('meals/eaten/delete/{id}',  [MealController::class, 'remove_meal_from_meal_eaten']);
 
+// Remove meal from the meala
+Route::post('meals/delete/{id}',  [MealController::class, 'remove_meal']);
+
 // Add a new meal (from your meals)
 Route::post('create/meal',  [MealController::class, 'store']);
+
+// Update meal in the meals
+Route::put('update/created_meals/{id}',  [MealController::class, 'update']);

@@ -9,9 +9,6 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <router-link @click="closeNav()" class="nav-link" aria-current="page" to="/">Home</router-link>
-                        </li>
 
                         <li class="nav-item">
                             <router-link @click="closeNav()" class="nav-link" aria-current="page"

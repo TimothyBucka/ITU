@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
 
-import home from "../views/home.vue";
 import restaurants  from "../views/restaurants.vue";
 import your_meals from "../views/your_meals.vue";
 import calendar from "../views/calendar.vue";
@@ -9,7 +8,7 @@ import account from "../views/account.vue";
 const routes = [
     {
         path: "/",
-        component: home,
+        component: calendar,
         name: "home",
     },
     {

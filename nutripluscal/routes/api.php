@@ -51,7 +51,7 @@ Route::get('restaurants/{id}',  [RestaurantController::class, 'show']);
 
 //-------------------MEAL-------------------//
 
-// List all of the meals (for future use)
+// List all of the meals
 Route::get('meals', [MealController::class, 'index']);
 
 // List single meal (for future use)

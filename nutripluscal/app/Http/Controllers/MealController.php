@@ -14,10 +14,8 @@ class MealController extends Controller
      */
     public function index()
     {
-        // Get meal data not paginated
-        $meal_data = Meal::all();
-        // get the meals that are not from restaurants
-        $meal_data = $meal_data->where('restaurant_id', null)->all();
+        // get the meals that are not from restaurants, paginated
+        $meal_data = Meal::where('restaurant_id', null)->paginate(10);
 
         // Return coolection of meals as a resource
         return Meal_data_resource::collection($meal_data);

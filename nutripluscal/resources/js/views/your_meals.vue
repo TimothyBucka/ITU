@@ -3,9 +3,15 @@
         <h1 class="py-3">Your meals</h1>
 
         <div class="container">
-            <h4 class="py-3">Created meals by you</h4>
-            <div>
-                your meals ...
+            <h4 class="py-3">Meals created by you</h4>
+            <ol class="list-group list-group-numbered">
+                <div class="" v-for="(meal, index) in added_meals" :key="index">
+                    <li class="list-group-item py-3 px-4 d-flex align-items-center">{{ meal.name }}</li>
+                </div>
+            </ol>
+            <div v-if="this.pagination_last_page != null && this.pagination_last_page > 1">
+                <button class="btn btn-primary" @click="previousPage">Previous</button>
+                <button class="btn btn-primary" @click="nextPage">Next</button>
             </div>
 
             <h4 class="py-3">Add your own meal</h4> <!--TODO in mobile version this exclude from it-->
@@ -22,17 +28,17 @@
                             <div>
                                 <div class="meal-modal-div">
                                     <label for="name">Name:</label>
-                                    <input type="text" id="name" v-model="mealParams.name"><br>
+                                    <input type="text" id="name" v-model="meal_arams.name"><br>
                                     <label for="calories">Calories:</label>
-                                    <input type="number" id="calories" v-model="mealParams.calories"><br>
+                                    <input type="number" id="calories" v-model="meal_arams.calories"><br>
                                     <label for="proteins">Proteins:</label>
-                                    <input type="number" id="proteins" v-model="mealParams.proteins"><br>
+                                    <input type="number" id="proteins" v-model="meal_arams.proteins"><br>
                                     <label for="carbs">Carbs:</label>
-                                    <input type="number" id="carbs" v-model="mealParams.carbs"><br>
+                                    <input type="number" id="carbs" v-model="meal_arams.carbs"><br>
                                     <label for="fat">Fat:</label>
-                                    <input type="number" id="fat" v-model="mealParams.fats"><br>
+                                    <input type="number" id="fat" v-model="meal_arams.fats"><br>
                                     <label for="fibres">Fibres:</label>
-                                    <input type="number" id="fibres" v-model="mealParams.fibers"><br>
+                                    <input type="number" id="fibres" v-model="meal_arams.fibers"><br>
                                 </div>
                             </div>
                         </div>
@@ -50,7 +56,10 @@ export default {
     data() {
         return {
             showModal_var: false,
-            mealParams: {
+            added_meals: [], // list of added meals for showing purposes
+            pagination_page: 1,
+            pagination_last_page: null,
+            meal_arams: {
                 name: '',
                 photo_path: '',
                 proteins: 0,
@@ -60,6 +69,10 @@ export default {
                 fibers: 0
             }
         }
+    },
+
+    created() {
+        this.showCreatedMeals();
     },
 
     methods: {
@@ -73,21 +86,21 @@ export default {
 
         modalCreateMeal() {
             // chceck if all digit params are positive numbers
-            let hasNegative = false; // flag to check if there are any negative numbers
+            let has_negative = false; // flag to check if there are any negative numbers
 
             // check if all digit params are positive numbers
-            for (let key in this.mealParams) {
+            for (let key in this.meal_arams) {
                 if (key == 'name' || key == 'photo_path') continue;
 
                 // reset the negative numbers all to 0
-                if (this.mealParams[key] < 0) {
-                    this.mealParams[key] = 0;
-                    hasNegative = true;
+                if (this.meal_arams[key] < 0) {
+                    this.meal_arams[key] = 0;
+                    has_negative = true;
                 }
             }
 
-            if (hasNegative) {
-                this.$toast.error('All digit params must be positive numbers', {
+            if (has_negative) {
+                this.$toast.error('Digit parameters must be positive numbers', {
                     position: 'top-right',
                     timeout: 2000,
                     closeOnClick: true,
@@ -97,15 +110,15 @@ export default {
             }
 
             axios
-                .post('/api/create/meal/', this.mealParams)
+                .post('/api/create/meal/', this.meal_arams)
                 .then(response => {
+
                     this.$toast.success(response.data.message, { // notification
                         position: 'top-right',
                         duration: 2500,
                         closeOnClick: true,
                         pauseOnHover: true,
                     });
-
                     this.closeModal();
                 })
                 .catch(error => {
@@ -117,9 +130,37 @@ export default {
                         pauseOnHover: true,
                     });
                 });
+            this.showCreatedMeals(); // refresh the page when the meal is added
+        },
+
+        showCreatedMeals() {
+            this.added_meals = [];
+            axios
+                .get('/api/meals?page=' + this.pagination_page)
+                .then(response => {
+                    this.added_meals = response.data.data;
+                    this.pagination_last_page = response.data.meta.last_page;
+                    
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+        },
+        nextPage() {
+            if (this.pagination_page < this.pagination_last_page) {
+                this.pagination_page++;
+                this.showCreatedMeals();
+            }
+        },
+        previousPage() {
+            if (this.pagination_page > 1) {
+                this.pagination_page--;
+                this.showCreatedMeals();
+            }
+
+
+
         }
-
-
     }
 }
 </script>

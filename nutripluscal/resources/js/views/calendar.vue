@@ -76,7 +76,7 @@
 
         </div>
         <transition name="fade">
-            <div v-if="showModal" class="modal">
+            <div v-if="show_modal" class="modal">
                 <div class="modal-content">
                     <span class="close" @click="closeModal">&times;</span>
                     <p>Select a meal:</p>
@@ -110,8 +110,8 @@ export default {
             selected_date: null,
             current_index: 0,
             can_navigate: true,
-            showModal: false,
-            selectedMeal: []
+            show_modal: false,
+            selected_meal: [] // selected meals from the modal
         }
     },
 
@@ -157,7 +157,7 @@ export default {
                 })
                 .catch(error => {
                     console.log(error);
-                    this.$toast.error(response.data.message, {
+                    this.$toast.error(error.response.data.message, {
                         position: 'top-right',
                         timeout: 2000,
                         closeOnClick: true,
@@ -170,8 +170,7 @@ export default {
             this.all_meals = {};
             axios.get('/api/meals/').then(response => {
                 this.all_meals = response.data.data;
-                //filter
-                this.showModal = true; // show the modal with the meals
+                this.show_modal = true; // show the modal with the meals
             })
                 .catch(error => {
                     console.log(error);
@@ -180,21 +179,21 @@ export default {
 
         closeModal() {
             // when the meal is selected but the user closes the modal, update the meal object 
-            if (this.selectedMeal.length > 0) {
+            if (this.selected_meal.length > 0) {
                 this.meals[this.selected_date] =
-                    this.meals[this.selected_date].filter(selectedMeal => selectedMeal.id !== this.selectedMeal[0].id); // remove the meal from the meals object
+                    this.meals[this.selected_date].filter(selected_meal => selected_meal.id !== this.selected_meal[0].id); // remove the meal from the meals object
             }
 
-            this.selectedMeal = []; // reset the selected meals
-            this.showModal = false;
+            this.selected_meal = []; // reset the selected meals
+            this.show_modal = false;
         },
 
         selectMeal(meal) { // select a meal from the modal
             // chceck if the meal is already selected by the user
-            let index = this.selectedMeal.findIndex(selectedMeal => selectedMeal.id === meal.id);
+            let index = this.selected_meal.findIndex(selected_meal => selected_meal.id === meal.id);
 
             if (index === -1) {
-                this.selectedMeal.push(meal); // add the meal to the selected meals
+                this.selected_meal.push(meal); // add the meal to the selected meals
 
                 if (!this.meals[this.selected_date]) {
                     this.meals[this.selected_date] = [];
@@ -202,17 +201,17 @@ export default {
                 this.meals[this.selected_date].push(meal); // Add the selected meal to the meals object
 
             } else {
-                this.selectedMeal = this.selectedMeal.filter(selectedMeal => selectedMeal.id !== meal.id); // remove the meal from the selected meals
-                this.meals[this.selected_date] = this.meals[this.selected_date].filter(selectedMeal => selectedMeal.id !== meal.id); // remove the meal from the meals object
+                this.selected_meal = this.selected_meal.filter(selected_meal => selected_meal.id !== meal.id); // remove the meal from the selected meals
+                this.meals[this.selected_date] = this.meals[this.selected_date].filter(selected_meal => selected_meal.id !== meal.id); // remove the meal from the meals object
             }
         },
 
         addSelectedMeal() {
             // Send the selected meals to the API (post request) and cycle through the array with the index from 0 to n
-            for (let i = 0; i < this.selectedMeal.length; i++) {
-                this.selectedMeal[i].date = this.selected_date;
+            for (let i = 0; i < this.selected_meal.length; i++) {
+                this.selected_meal[i].date = this.selected_date;
                 axios
-                    .post('/api/meals/eaten/', this.selectedMeal[i])
+                    .post('/api/meals/eaten/', this.selected_meal[i])
                     .then(response => {
                         this.retrieveMeals(this.selected_date); // Refresh it after added to show the new data
 
@@ -227,7 +226,7 @@ export default {
                     })
                     .catch(error => {
                         console.log(error);
-                        this.$toast.error(response.data.message, {
+                        this.$toast.error(error.response.data.message, {
                             position: 'top-right',
                             timeout: 2000,
                             closeOnClick: true,
@@ -236,7 +235,7 @@ export default {
                     });
             }
 
-            this.selectedMeal = []; // reset the selected meals
+            this.selected_meal = []; // reset the selected meals
         },
 
         isMealAlreadyAdded(meal_modal) { // check if the meal is already added to the date

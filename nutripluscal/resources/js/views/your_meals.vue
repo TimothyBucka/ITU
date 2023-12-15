@@ -253,6 +253,8 @@ export default {
 
 
     }
+    // kontrolsa pri edite aj na zaklade ostatnych paramterov ci je to validne
+    // obrazky pre jedla, jak pri create, dat moznost pridania obrazkov tak aj ich zobrazenie v ol liste
 }
 </script>
 

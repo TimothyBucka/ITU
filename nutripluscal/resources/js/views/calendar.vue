@@ -328,6 +328,10 @@ export default {
 
     },
 }
+//TODO
+//delete add activity
+// zobrazenie podla skupin, ranajky, obed vecera, pricom kazda z tychto skupin ma vlastny add
+// a vyber porcie
 </script>
 
 <style scoped>

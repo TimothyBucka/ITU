@@ -1,6 +1,6 @@
 <template>
+    <h1 class="py-3">Calendar</h1>
     <div class="container">
-        <h1 class="py-3">Calendar</h1>
 
         <div id="carouselExample" class="carousel slide">
             <div class="carousel-inner">
@@ -76,10 +76,11 @@
 
         </div>
         <transition name="fade">
-                <div v-if="showModal" class="modal">
-                    <div class="modal-content">
-                        <span class="close" @click="closeModal">&times;</span>
-                        <p>Select a meal:</p>
+            <div v-if="showModal" class="modal">
+                <div class="modal-content">
+                    <span class="close" @click="closeModal">&times;</span>
+                    <p>Select a meal:</p>
+                    <div class="meal-list">
                         <div v-for="(meal, index) in all_meals" :key="index" @click="selectMeal(meal)">
                             <div v-if="!isMealAlreadyAdded(meal)">
                                 <div class="meal-modal-div">
@@ -88,9 +89,10 @@
                                 </div>
                             </div>
                         </div>
-                        <button @click="addSelectedMeal">Add</button>
                     </div>
+                    <button @click="addSelectedMeal">Add</button>
                 </div>
+            </div>
         </transition>
 
     </div>
@@ -156,6 +158,7 @@ export default {
                 .catch(error => {
                     console.log(error);
                     this.$toast.error(response.data.message, {
+                        position: 'top-right',
                         timeout: 2000,
                         closeOnClick: true,
                         pauseOnHover: true,
@@ -176,14 +179,14 @@ export default {
         },
 
         closeModal() {
-                // when the meal is selected but the user closes the modal, update the meal object 
-                if (this.selectedMeal.length > 0) {
-                    this.meals[this.selected_date] =
-                        this.meals[this.selected_date].filter(selectedMeal => selectedMeal.id !== this.selectedMeal[0].id); // remove the meal from the meals object
-                }
+            // when the meal is selected but the user closes the modal, update the meal object 
+            if (this.selectedMeal.length > 0) {
+                this.meals[this.selected_date] =
+                    this.meals[this.selected_date].filter(selectedMeal => selectedMeal.id !== this.selectedMeal[0].id); // remove the meal from the meals object
+            }
 
-                this.selectedMeal = []; // reset the selected meals
-                this.showModal = false;
+            this.selectedMeal = []; // reset the selected meals
+            this.showModal = false;
         },
 
         selectMeal(meal) { // select a meal from the modal
@@ -219,10 +222,13 @@ export default {
                             closeOnClick: true,
                             pauseOnHover: true,
                         });
+
+                        this.closeModal();
                     })
                     .catch(error => {
                         console.log(error);
                         this.$toast.error(response.data.message, {
+                            position: 'top-right',
                             timeout: 2000,
                             closeOnClick: true,
                             pauseOnHover: true,
@@ -321,16 +327,8 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 /*----------------------------- Modal (popup) -----------------------------*/
-.meal-modal-div {
-    border: 1px solid black;
-    padding: 10px;
-    margin: 10px;
-    cursor: pointer;
-    flex: 1;
-}
-
 .modal {
     display: flex;
     position: fixed;
@@ -349,6 +347,19 @@ export default {
     padding: 20px;
     border: 1px solid #888;
     width: 50%;
+}
+
+.meal-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.meal-modal-div {
+    border: 1px solid black;
+    padding: 10px;
+    margin: 10px;
+    cursor: pointer;
+    flex: 1;
 }
 
 .close {

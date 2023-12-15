@@ -65,3 +65,6 @@ Route::post('meals/eaten',  [MealController::class, 'add_meal_to_meal_eaten']);
 
 // Remove meal from meal eaten
 Route::post('meals/eaten/delete/{id}',  [MealController::class, 'remove_meal_from_meal_eaten']);
+
+// Add a new meal (from your meals)
+Route::post('create/meal',  [MealController::class, 'store']);

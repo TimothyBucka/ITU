@@ -173,8 +173,8 @@ class MealController extends Controller
             ], 400);
         }
 
-        // check if the meal already exists
-        $meal_exists = Meal::where('name', $name)->first();
+        // check if the meal already exists, chceck all parameters
+        $meal_exists = Meal::where('name', $name)->where('calories', $calories)->where('proteins', $proteins)->where('carbs', $carbs)->where('fats', $fats)->where('photo_path', $photo_path)->where('fibers', $fibers)->first();
         if ($meal_exists) {
             return response()->json([
                 'message' => $name . ' already exists'
@@ -205,6 +205,14 @@ class MealController extends Controller
      */
     public function remove_meal(string $id)
     {
+        // check if the meal is already used in the meal_eaten
+        $meal_eaten = Meals_eaten::where('meal_id', $id)->first();
+        if ($meal_eaten) {
+            return response()->json([
+                'message' => 'Meal is already used in the meal_eaten'
+            ], 400);
+        }
+
         $meal = Meal::findOrFail($id);
         $meal_name = $meal->name;
         if ($meal->delete()) {

@@ -10,7 +10,7 @@ import account from "../views/account.vue";
 const routes = [
     {
         path: "/",
-        component: home,
+        component: calendar,
         name: "home",
     },
     {

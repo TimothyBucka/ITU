@@ -2,11 +2,18 @@
     <h1 class="py-3">Your meals</h1>
 
     <div class="container">
+        <h4 class="py-3">Add your own meal</h4>
+        <div class="buttons">
+            <a class="btn btn-primary" href="#" @click="showModal(false)">Create Meal</a>
+        </div>
+
         <h4 class="py-3">Meals created by you</h4>
         <ol class="list-group list-group-numbered">
             <div v-for="(meal, index) in added_meals" :key="index">
                 <li class="list-group-item py-1 px-4 d-flex align-items-center created-meals-buttons">
                     {{ meal.name }}
+                    <img class="img-thumbnail meal-image" :src="getImageUrl(meal.photo_path)" />
+
                     <div class="buttons">
                         <a class="btn btn-primary" href="#" @click="showEditModal(meal.id)">Edit</a>
                         <a class="btn btn-primary" href="#" @click="deleteCreatedMeal(meal.id)">Delete</a>
@@ -17,11 +24,6 @@
         <div v-if="this.pagination_last_page != null && this.pagination_last_page > 1">
             <button class="btn btn-primary" @click="previousPage">Previous</button>
             <button class="btn btn-primary" @click="nextPage">Next</button>
-        </div>
-
-        <h4 class="py-3">Add your own meal</h4> <!--TODO in mobile version this exclude from it-->
-        <div class="buttons">
-            <a class="btn btn-primary" href="#" @click="showModal(false)">Create Meal</a>
         </div>
 
         <transition name="fade">
@@ -47,6 +49,9 @@
                                 <input type="number" id="fat" v-model="meal_params.fats"><br>
                                 <label for="fibres">Fibres:</label>
                                 <input type="number" id="fibres" v-model="meal_params.fibers"><br>
+                                <label for="photo_path">Photo</label>
+                                <input type="text" id="photo_path" v-model="meal_params.photo_path"><br>
+
                             </div>
                         </div>
                     </div>
@@ -110,6 +115,12 @@ export default {
                 });
         },
 
+        getImageUrl(image) { // get the image url for the meal
+            const imageUrl = new URL('/public/img/' + image, import.meta.url);
+            console.log(imageUrl);
+            return imageUrl;
+        },
+
         closeModal() {
             this.showModal_var = false;
 
@@ -141,12 +152,17 @@ export default {
 
             if (has_negative) {
                 this.$toast.error('Digit parameters must be positive numbers', {
-                    position: 'bottom-right',
+                    position: 'top-right',
                     timeout: 2000,
                     closeOnClick: true,
                     pauseOnHover: true,
                 });
                 return;
+            }
+
+            // when the photo_path is empty, set it to the default image
+            if (this.meal_params.photo_path == '') {
+                this.meal_params.photo_path = 'img_placeholder.jpg';
             }
 
             axios
@@ -155,7 +171,7 @@ export default {
                     this.showCreatedMeals(); // refresh the page when the meal is added
 
                     this.$toast.success(response.data.message, { // notification
-                        position: 'bottom-right',
+                        position: 'top-right',
                         duration: 2500,
                         closeOnClick: true,
                         pauseOnHover: true,
@@ -165,7 +181,7 @@ export default {
                 .catch(error => {
                     console.log(error);
                     this.$toast.error(error.response.data.message, {
-                        position: 'bottom-right',
+                        position: 'top-right',
                         timeout: 2000,
                         closeOnClick: true,
                         pauseOnHover: true,
@@ -178,32 +194,6 @@ export default {
                 put('/api/update/created_meals/' + this.meal_id_for_editing, this.meal_params)
                 .then(response => {
                     this.showCreatedMeals(); // refresh the page when the meal is updated
-
-                    this.$toast.success(response.data.message, { // notification
-                        position: 'bottom-right',
-                        duration: 2500,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                    });
-                    this.closeModal();
-                })
-                .catch(error => {
-                    console.log(error);
-                    this.$toast.error(error.response.data.message, {
-                        position: 'bottom-right',
-                        timeout: 2000,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                    });
-                });
-
-        },
-
-        deleteCreatedMeal(meal_id) {
-            axios
-                .post('/api/meals/delete/' + meal_id)
-                .then(response => {
-                    this.showCreatedMeals(this.selected_date); // refresh it after added to show the new data
 
                     this.$toast.success(response.data.message, { // notification
                         position: 'top-right',
@@ -274,10 +264,12 @@ export default {
             }
         }
     }
-    // kontrolsa pri edite aj na zaklade ostatnych paramterov ci je to validne
-    // obrazky pre jedla, jak pri create, dat moznost pridania obrazkov tak aj ich zobrazenie v ol liste
 }
+// kontrolsa pri edite aj na zaklade ostatnych paramterov ci je to validne --- DONE
+// obrazky pre jedla, jak pri create, dat moznost pridania obrazkov tak aj ich zobrazenie v ol liste ---
 </script>
+
+
 
 <style scoped>
 .container {
@@ -306,6 +298,19 @@ export default {
 .created-meals-buttons {
     display: flex;
     justify-content: space-between;
+}
+
+.rest-cover {
+    flex: 1;
+    background-size: cover;
+    background-position: center;
+}
+
+.meal-image {
+    width: 125px;
+    height: 100px;
+
+
 }
 
 /*----------------------------- Modal (popup) -----------------------------*/
@@ -361,5 +366,3 @@ export default {
     opacity: 0;
 }
 </style>
-
-<!-- TODO tie chcki pre + a - hondoty parametre jedal by sa mali kontorlvat tu ci v back end-->

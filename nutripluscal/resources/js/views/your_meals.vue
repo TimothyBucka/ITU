@@ -1,56 +1,79 @@
 <template>
-    <div>
-        <h1 class="py-3">Your meals</h1>
+    <h1 class="py-3">Your meals</h1>
 
-        <div class="container">
-            <h4 class="py-3">Created meals by you</h4>
-            <div>
-                your meals ...
+    <div class="container">
+        <h4 class="py-3">Meals created by you</h4>
+        <ol class="list-group list-group-numbered">
+            <div v-for="(meal, index) in added_meals" :key="index">
+                <li class="list-group-item py-1 px-4 d-flex align-items-center created-meals-buttons">
+                    {{ meal.name }}
+                    <div class="buttons">
+                        <a class="btn btn-primary" href="#" @click="showEditModal(meal.id)">Edit</a>
+                        <a class="btn btn-primary" href="#" @click="deleteCreatedMeal(meal.id)">Delete</a>
+                    </div>
+                </li>
             </div>
+        </ol>
+        <div v-if="this.pagination_last_page != null && this.pagination_last_page > 1">
+            <button class="btn btn-primary" @click="previousPage">Previous</button>
+            <button class="btn btn-primary" @click="nextPage">Next</button>
+        </div>
 
-            <h4 class="py-3">Add your own meal</h4> <!--TODO in mobile version this exclude from it-->
-            <div class="buttons">
-                <a class="btn btn-primary" href="#" @click="showModal">Create Meal</a>
-            </div>
+        <h4 class="py-3">Add your own meal</h4> <!--TODO in mobile version this exclude from it-->
+        <div class="buttons">
+            <a class="btn btn-primary" href="#" @click="showModal(false)">Create Meal</a>
+        </div>
 
-            <transition name="fade">
-                <div v-if="showModal_var" class="modal">
-                    <div class="modal-content">
-                        <span class="close" @click="closeModal">&times;</span>
-                        <p>Create a meal:</p>
-                        <div class="meal-params">
-                            <div>
-                                <div class="meal-modal-div">
-                                    <label for="name">Name:</label>
-                                    <input type="text" id="name" v-model="mealParams.name"><br>
-                                    <label for="calories">Calories:</label>
-                                    <input type="number" id="calories" v-model="mealParams.calories"><br>
-                                    <label for="proteins">Proteins:</label>
-                                    <input type="number" id="proteins" v-model="mealParams.proteins"><br>
-                                    <label for="carbs">Carbs:</label>
-                                    <input type="number" id="carbs" v-model="mealParams.carbs"><br>
-                                    <label for="fat">Fat:</label>
-                                    <input type="number" id="fat" v-model="mealParams.fats"><br>
-                                    <label for="fibres">Fibres:</label>
-                                    <input type="number" id="fibres" v-model="mealParams.fibers"><br>
-                                </div>
+        <transition name="fade">
+            <div v-if="showModal_var" class="modal">
+                <div class="modal-content">
+                    <span class="close" @click="closeModal">&times;</span>
+
+                    <p v-if="!this.is_editing_modal">Create a meal:</p>
+                    <p v-else>Edit a meal:</p>
+
+                    <div class="meal-params">
+                        <div>
+                            <div class="meal-modal-div">
+                                <label for="name">Name:</label>
+                                <input type="text" id="name" v-model="meal_params.name"><br>
+                                <label for="calories">Calories:</label>
+                                <input type="number" id="calories" v-model="meal_params.calories"><br>
+                                <label for="proteins">Proteins:</label>
+                                <input type="number" id="proteins" v-model="meal_params.proteins"><br>
+                                <label for="carbs">Carbs:</label>
+                                <input type="number" id="carbs" v-model="meal_params.carbs"><br>
+                                <label for="fat">Fat:</label>
+                                <input type="number" id="fat" v-model="meal_params.fats"><br>
+                                <label for="fibres">Fibres:</label>
+                                <input type="number" id="fibres" v-model="meal_params.fibers"><br>
                             </div>
                         </div>
-                        <button @click="modalCreateMeal">Add</button>
                     </div>
+
+                    <button class="btn btn-primary" v-if="!this.is_editing_modal" @click="modalCreateMeal">Add</button>
+                    <button class="btn btn-primary" v-else @click="modalUpdateMeal">Edit</button>
+
                 </div>
-            </transition>
-        </div>
+            </div>
+        </transition>
 
     </div>
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
     data() {
         return {
             showModal_var: false,
-            mealParams: {
+            is_editing_modal: false, // flag to check if the modal is for editing or creating the meal
+            added_meals: [], // list of added meals for showing purposes
+            pagination_page: 1,
+            pagination_last_page: null,
+            meal_id_for_editing: null,
+            meal_params: {
                 name: '',
                 photo_path: '',
                 proteins: 0,
@@ -62,32 +85,62 @@ export default {
         }
     },
 
+    created() {
+        this.showCreatedMeals();
+    },
+
     methods: {
-        showModal() {
+        showModal(editing) { // show the modal for creating meals
             this.showModal_var = true;
+            this.is_editing_modal = editing;
+
+        },
+
+        showEditModal(meal_id) {
+            this.meal_id_for_editing = meal_id;
+            axios
+                .get('/api/meals/' + meal_id)
+                .then(response => {
+                    this.meal_params = response.data.data;
+                    this.is_editing_modal = true;
+                    this.showModal(this.is_editing_modal);
+                })
+                .catch(error => {
+                    console.log(error);
+                });
         },
 
         closeModal() {
             this.showModal_var = false;
+
+            // reset the meal_params
+            this.meal_params = {
+                name: '',
+                photo_path: '',
+                proteins: 0,
+                calories: 0,
+                carbs: 0,
+                fats: 0,
+                fibers: 0
+            };
         },
 
-        modalCreateMeal() {
-            // chceck if all digit params are positive numbers
-            let hasNegative = false; // flag to check if there are any negative numbers
+        modalCreateMeal() { // create a meal from the modal
+            let has_negative = false; // flag to check if there are any negative numbers TODO NOT SURE IF THIS CAN BE HERE OR RATHER AT BACKEND
 
             // check if all digit params are positive numbers
-            for (let key in this.mealParams) {
+            for (let key in this.meal_params) {
                 if (key == 'name' || key == 'photo_path') continue;
 
                 // reset the negative numbers all to 0
-                if (this.mealParams[key] < 0) {
-                    this.mealParams[key] = 0;
-                    hasNegative = true;
+                if (this.meal_params[key] < 0) {
+                    this.meal_params[key] = 0;
+                    has_negative = true;
                 }
             }
 
-            if (hasNegative) {
-                this.$toast.error('All digit params must be positive numbers', {
+            if (has_Negative) {
+                this.$toast.error('Digit parameters must be positive numbers', {
                     position: 'bottom-right',
                     timeout: 2000,
                     closeOnClick: true,
@@ -97,15 +150,16 @@ export default {
             }
 
             axios
-                .post('/api/create/meal/', this.mealParams)
+                .post('/api/create/meal/', this.meal_params)
                 .then(response => {
+                    this.showCreatedMeals(); // refresh the page when the meal is added
+
                     this.$toast.success(response.data.message, { // notification
                         position: 'bottom-right',
                         duration: 2500,
                         closeOnClick: true,
                         pauseOnHover: true,
                     });
-
                     this.closeModal();
                 })
                 .catch(error => {
@@ -117,9 +171,108 @@ export default {
                         pauseOnHover: true,
                     });
                 });
+        },
+
+        modalUpdateMeal() { // function for editing the meals from the modal
+            axios.
+                put('/api/update/created_meals/' + this.meal_id_for_editing, this.meal_params)
+                .then(response => {
+                    this.showCreatedMeals(); // refresh the page when the meal is updated
+
+                    this.$toast.success(response.data.message, { // notification
+                        position: 'bottom-right',
+                        duration: 2500,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                    });
+                    this.closeModal();
+                })
+                .catch(error => {
+                    console.log(error);
+                    this.$toast.error(error.response.data.message, {
+                        position: 'bottom-right',
+                        timeout: 2000,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                    });
+                });
+
+        },
+
+        deleteCreatedMeal(meal_id) {
+            axios
+                .post('/api/meals/delete/' + meal_id)
+                .then(response => {
+                    this.showCreatedMeals(this.selected_date); // refresh it after added to show the new data
+
+                    this.$toast.success(response.data.message, { // notification
+                        position: 'top-right',
+                        duration: 2500,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                    });
+                    this.closeModal();
+                })
+                .catch(error => {
+                    console.log(error);
+                    this.$toast.error(error.response.data.message, {
+                        position: 'top-right',
+                        timeout: 2000,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                    });
+                });
+        },
+
+        deleteCreatedMeal(meal_id) {
+            axios
+                .post('/api/meals/delete/' + meal_id)
+                .then(response => {
+                    this.showCreatedMeals(this.selected_date); // refresh it after added to show the new data
+
+                    this.$toast.success(response.data.message, { // notification
+                        position: 'top-right',
+                        duration: 2500,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                    });
+                })
+                .catch(error => {
+                    console.log(error);
+                    this.$toast.error(error.response.data.message, {
+                        position: 'top-right',
+                        timeout: 2000,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                    });
+                });
+        },
+
+        showCreatedMeals() { // show the meals created by the user in the list (not in modal)
+            this.added_meals = [];
+            axios
+                .get('/api/meals?page=' + this.pagination_page)
+                .then(response => {
+                    this.added_meals = response.data.data;
+                    this.pagination_last_page = response.data.meta.last_page;
+
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+        },
+        nextPage() {
+            if (this.pagination_page < this.pagination_last_page) {
+                this.pagination_page++;
+                this.showCreatedMeals();
+            }
+        },
+        previousPage() {
+            if (this.pagination_page > 1) {
+                this.pagination_page--;
+                this.showCreatedMeals();
+            }
         }
-
-
     }
 }
 </script>
@@ -146,6 +299,11 @@ export default {
 .fade-enter-active,
 .fade-leave-active {
     transition: opacity .5s;
+}
+
+.created-meals-buttons {
+    display: flex;
+    justify-content: space-between;
 }
 
 /*----------------------------- Modal (popup) -----------------------------*/
@@ -201,3 +359,5 @@ export default {
     opacity: 0;
 }
 </style>
+
+<!-- TODO tie chcki pre + a - hondoty parametre jedal by sa mali kontorlvat tu ci v back end-->

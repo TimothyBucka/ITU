@@ -14,10 +14,8 @@ class MealController extends Controller
      */
     public function index()
     {
-        // Get meal data not paginated
-        $meal_data = Meal::all();
-        // get the meals that are not from restaurants
-        $meal_data = $meal_data->where('restaurant_id', null)->all();
+        // get the meals that are not from restaurants, paginated
+        $meal_data = Meal::where('restaurant_id', null)->paginate(10);
 
         // Return coolection of meals as a resource
         return Meal_data_resource::collection($meal_data);
@@ -36,6 +34,8 @@ class MealController extends Controller
      */
     public function store(Request $request)
     {
+        //$is_negative = false;
+
         $meal = new Meal;
         $meal->name = $request->name;
         $meal->calories = $request->calories;
@@ -46,21 +46,40 @@ class MealController extends Controller
         $meal->photo_path = $request->photo_path; // TODO: add photo path
         $meal->restaurant_id = null;
 
+        // // chceck if the numbers are not negative
+        // foreach ($meal->getAttributes() as $key => $value) {
+        //     if ($key == 'photo_path' || $key == 'restaurant_id') {
+        //         continue;
+        //     }
+
+        //     // reset the negative numbers all to 0
+        //     if ($value < 0) {
+        //         $meal->$key = 0;
+        //         $is_negative = true;
+        //     }
+        // }
+
+        // if ($is_negative) {
+        //     return response()->json([
+        //         'message' => 'Numbers cannot be negative'
+        //     ], 400);
+        // }
+
         //check if the meal already exists
         $meal_exists = Meal::where('name', $meal->name)->first();
         if ($meal_exists) {
             return response()->json([
-                'message' => $meal->name.' already exists'
+                'message' => $meal->name . ' already exists'
             ], 400);
         }
 
         if ($meal->save()) {
             return response()->json([
-                'message' => $meal->name.' created'
+                'message' => $meal->name . ' created'
             ], 200);
         } else {
             return response()->json([
-                'message' => $meal->name.' not created'
+                'message' => $meal->name . ' not created'
             ], 400);
         }
     }
@@ -75,17 +94,17 @@ class MealController extends Controller
         $meal_eaten->portion_size = 50;
         $meal_eaten->date_of_eat = $request->date;
         $meal_eaten->meal_id = $request->id;
-        
+
         // get the name of the meal
         $meal_name = Meal::findOrFail($request->id)->name;
 
         if ($meal_eaten->save()) {
             return response()->json([
-                'message' => $meal_name.' added'
+                'message' => $meal_name . ' added'
             ], 200);
         } else {
             return response()->json([
-                'message' => $meal_name.' not added'
+                'message' => $meal_name . ' not added'
             ], 400);
         }
     }
@@ -133,15 +152,74 @@ class MealController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the meal in the meals, which was created by the user.
      */
-    public function update(Request $request, Meal $meal)
+    public function update(Request $request, string $id)
     {
-        //
+        $existing = Meal::findOrFail($id);
+
+        $name = $request->input('name');
+        $photo_path = $request->input('photo_path');
+        $calories = $request->input('calories');
+        $proteins = $request->input('proteins');
+        $carbs = $request->input('carbs');
+        $fats = $request->input('fats');
+        $fibers = $request->input('fibers');
+
+        // chceck if the numbers are not negative
+        if ($calories < 0 || $proteins < 0 || $carbs < 0 || $fats < 0 || $fibers < 0) {
+            return response()->json([
+                'message' => 'Numbers cannot be negative'
+            ], 400);
+        }
+
+        // check if the meal already exists
+        $meal_exists = Meal::where('name', $name)->first();
+        if ($meal_exists) {
+            return response()->json([
+                'message' => $name . ' already exists'
+            ], 400);
+        }
+
+        $existing->name = $name ? $name : $existing->name; // if name is not null, then update the name
+        $existing->photo_path = $photo_path ? $photo_path : $existing->photo_path;
+        $existing->calories = $calories ? $calories : $existing->calories;
+        $existing->proteins = $proteins ? $proteins : $existing->proteins;
+        $existing->carbs = $carbs ? $carbs : $existing->carbs;
+        $existing->fats = $fats ? $fats : $existing->fats;
+        $existing->fibers = $fibers ? $fibers : $existing->fibers;
+
+        if ($existing->save()) {
+            return response()->json([
+                'message' => $existing->name . ' updated'
+            ], 200);
+        } else {
+            return response()->json([
+                'message' => $existing->name . ' not updated'
+            ], 400);
+        }
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the meal from the meals.
+     */
+    public function remove_meal(string $id)
+    {
+        $meal = Meal::findOrFail($id);
+        $meal_name = $meal->name;
+        if ($meal->delete()) {
+            return response()->json([
+                'message' => $meal_name . ' deleted'
+            ], 200);
+        } else {
+            return response()->json([
+                'message' => $meal_name . ' not deleted'
+            ], 400);
+        }
+    }
+
+    /**
+     * Remove the meal from the meal_eaten.
      */
     public function remove_meal_from_meal_eaten(string $id)
     {
@@ -150,11 +228,11 @@ class MealController extends Controller
         if ($meal_eaten->delete()) {
             return response()->json([
                 // instead of Meal add the meal name to the message
-                'message' => $meal_name.' deleted'
+                'message' => $meal_name . ' deleted'
             ], 200);
         } else {
             return response()->json([
-                'message' => $meal_name.' not deleted'
+                'message' => $meal_name . ' not deleted'
             ], 400);
         }
     }

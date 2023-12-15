@@ -33,7 +33,7 @@
             </div>
 
             <div class="calories_accepted">
-                <p>{{ totalCalories }}/{{ daily_intake }} kcal</p>
+                <p>{{ totalCalories }}/{{ daily_intake }} kcal</p> <!-- TODO rework this to backend -->
             </div>
 
             <div class="percents">

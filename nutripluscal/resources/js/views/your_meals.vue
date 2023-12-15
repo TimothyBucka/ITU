@@ -139,7 +139,7 @@ export default {
                 }
             }
 
-            if (has_Negative) {
+            if (has_negative) {
                 this.$toast.error('Digit parameters must be positive numbers', {
                     position: 'bottom-right',
                     timeout: 2000,

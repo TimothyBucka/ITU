@@ -90,7 +90,7 @@ class MealController extends Controller
     public function add_meal_to_meal_eaten(Request $request)
     {
         $meal_eaten = new Meals_eaten;
-        $meal_eaten->portion_size = 50;
+        $meal_eaten->portion_size = $request->portion_size;
         $meal_eaten->date_of_eat = $request->date;
         $meal_eaten->meal_id = $request->id;
         $meal_eaten->meal_time = $request->time_of_meal;

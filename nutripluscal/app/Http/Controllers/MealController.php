@@ -43,7 +43,7 @@ class MealController extends Controller
         $meal->carbs = $request->carbs;
         $meal->fats = $request->fats;
         $meal->fibers = $request->fibers;
-        $meal->photo_path = $request->photo_path; // TODO: add photo path
+        $meal->photo_path = $request->photo_path;
         $meal->restaurant_id = null;
 
         // // chceck if the numbers are not negative
@@ -90,7 +90,7 @@ class MealController extends Controller
     public function add_meal_to_meal_eaten(Request $request)
     {
         $meal_eaten = new Meals_eaten;
-        $meal_eaten->portion_size = 50;
+        $meal_eaten->portion_size = $request->portion_size;
         $meal_eaten->date_of_eat = $request->date;
         $meal_eaten->meal_id = $request->id;
         $meal_eaten->meal_time = $request->time_of_meal;

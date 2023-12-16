@@ -1,7 +1,7 @@
 <template>
     <h1 class="py-3">Calendar</h1>
 
-    <div id="carouselExample" class="carousel slide">
+    <div id="carouselExample" class="carousel slide"> <!--CAROUSEL -->
         <div class="carousel-inner">
             <div v-for="(date, index) in dates" :key="index" class="carousel-item"
                 :class="{ active: index == dates.length - 1 }">
@@ -21,11 +21,7 @@
         </button>
     </div><br>
 
-    <!-- <div class="buttons">
-        <a class="btn btn-primary" href="#" @click="modalGetMeals">Add Meal</a>
-    </div> -->
-
-    <div v-for="(meal, date) in meals" :key="date">
+    <div v-for="(meal, date) in meals" :key="date"> <!--GENERAL DIV -->
         <div class="stats">
             <div class="calories_stats">
                 <div class="icon">
@@ -37,7 +33,7 @@
                 </div>
 
                 <div class="percents">
-                    <p>{{ ( (daily_intake ? (totalCalories(meal) / daily_intake) : 0) * 100).toFixed(1) }}%</p>
+                    <p>{{ ((daily_intake ? (totalCalories(meal) / daily_intake) : 0) * 100).toFixed(1) }}%</p>
                 </div>
 
             </div><br>
@@ -45,29 +41,37 @@
 
                 <div class="proteins">
                     <p>Proteins: {{ totalNutritions(meal).proteins }}g</p>
-                    <div class="progress-bar" :style="{ '--initial-progress': ((totalNutritions(meal).proteins / getPercentage(daily_intake).proteinsPercentage) * 100 ) + '%' }">
-                        <p>{{ ((totalNutritions(meal).proteins / getPercentage(daily_intake).proteinsPercentage) * 100 ).toFixed(1) }}%</p>
+                    <div class="progress-bar"
+                        :style="{ '--initial-progress': ((totalNutritions(meal).proteins / getPercentage(daily_intake).proteinsPercentage) * 100) + '%' }">
+                        <p>{{ ((totalNutritions(meal).proteins / getPercentage(daily_intake).proteinsPercentage) * 100
+                        ).toFixed(1) }}%</p>
                     </div>
                 </div>
-    
+
                 <div class="fibers">
                     <p>Fibers: {{ totalNutritions(meal).fibers }}g</p>
-                    <div class="progress-bar" :style="{ '--initial-progress': ((totalNutritions(meal).fibers / getPercentage(daily_intake).fibersPercentage) * 100 ) + '%' }">
-                        <p>{{ ((totalNutritions(meal).fibers / getPercentage(daily_intake).fibersPercentage) * 100 ).toFixed(1) }}%</p>
+                    <div class="progress-bar"
+                        :style="{ '--initial-progress': ((totalNutritions(meal).fibers / getPercentage(daily_intake).fibersPercentage) * 100) + '%' }">
+                        <p>{{ ((totalNutritions(meal).fibers / getPercentage(daily_intake).fibersPercentage) * 100
+                        ).toFixed(1) }}%</p>
                     </div>
                 </div>
-    
+
                 <div class="fats">
                     <p>Fats: {{ totalNutritions(meal).fats }}g</p>
-                    <div class="progress-bar" :style="{ '--initial-progress': ((totalNutritions(meal).fats / getPercentage(daily_intake).fatsPercentage) * 100 ) + '%' }">
-                        <p>{{ ((totalNutritions(meal).fats / getPercentage(daily_intake).fatsPercentage) * 100 ).toFixed(1) }}%</p>
+                    <div class="progress-bar"
+                        :style="{ '--initial-progress': ((totalNutritions(meal).fats / getPercentage(daily_intake).fatsPercentage) * 100) + '%' }">
+                        <p>{{ ((totalNutritions(meal).fats / getPercentage(daily_intake).fatsPercentage) * 100).toFixed(1)
+                        }}%</p>
                     </div>
                 </div>
-    
+
                 <div class="carbs">
                     <p>Carbs: {{ totalNutritions(meal).carbs }}g</p>
-                    <div class="progress-bar" :style="{ '--initial-progress': ((totalNutritions(meal).carbs / getPercentage(daily_intake).carbsPercentage) * 100 ) + '%' }">
-                        <p>{{ ((totalNutritions(meal).carbs / getPercentage(daily_intake).carbsPercentage) * 100 ).toFixed(1) }}%</p>
+                    <div class="progress-bar"
+                        :style="{ '--initial-progress': ((totalNutritions(meal).carbs / getPercentage(daily_intake).carbsPercentage) * 100) + '%' }">
+                        <p>{{ ((totalNutritions(meal).carbs / getPercentage(daily_intake).carbsPercentage) * 100
+                        ).toFixed(1) }}%</p>
                     </div>
                 </div>
             </div>
@@ -119,18 +123,24 @@
             </div>
         </div>
 
-    </div>
-        <transition name="fade">
+        <transition name="fade"> <!--MEAL MODAL -->
             <div v-if="show_modal" class="modal">
                 <div class="modal-content">
                     <span class="close" @click="closeModal">&times;</span>
                     <p>Select a meal:</p>
                     <div class="meal-list">
                         <div v-for="(meal, index) in all_meals" :key="index" @click="selectMeal(meal)">
-                            <div v-if="!isMealAlreadyAdded(meal)">
+                            <div v-if="!isMealAlreadyAdded(meal, accordion)">
                                 <div class="meal-modal-div">
                                     <p>{{ meal.name }}</p>
-                                    <!-- TODO portion size -->
+                                    <select class="form-select form-select-sm" aria-label="Small select example" v-model="meal.portion_size">
+                                        <option selected value="1.0">1x</option>
+                                        <option value="0.5">0.5x</option>
+                                        <option value="1.5">1.5x</option>        
+                                        <option value="2.0">2x</option>
+                                        <option value="2.5">2.5x</option>
+                                        <option value="3.0">3x</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -243,10 +253,10 @@ export default {
                 carbsPercentage: 0
             };
             if (value) {
-                total.proteinsPercentage = (value*0.25)/4;
-                total.fibersPercentage = (value*0.1)/10;
-                total.fatsPercentage = (value*0.25)/9;
-                total.carbsPercentage = (value*0.52)/4;
+                total.proteinsPercentage = (value * 0.25) / 4;
+                total.fibersPercentage = (value * 0.1) / 10;
+                total.fatsPercentage = (value * 0.25) / 9;
+                total.carbsPercentage = (value * 0.52) / 4;
             } else {
                 total.proteinsPercentage = 0;
                 total.fibersPercentage = 0;
@@ -306,10 +316,9 @@ export default {
         selectMeal(meal) { // select a meal from the modal
             // chceck if the meal is already selected by the user
             let index = this.selected_meal.findIndex(selected_meal => selected_meal.id === meal.id);
-
             if (index === -1) {
+                meal.portion_size = meal.portion_size || 1;
                 this.selected_meal.push(meal); // add the meal to the selected meals
-
                 if (!this.meals[this.selected_date]) {
                     this.meals[this.selected_date] = [];
                 }
@@ -357,7 +366,7 @@ export default {
         isMealAlreadyAdded(meal_modal) { // check if the meal is already added to the date
             if (this.meals[this.selected_date]) { // if there are meals for the selected date
                 for (let item of this.meals[this.selected_date]) { // loop through them
-                    if (Array.isArray(item.meal) && item.meal.length > 0) { // if the meal is already selected
+                    if (Array.isArray(item.meal) && item.meal.length > 0 && item.meal_time == this.time_of_meal) { // if the meal is already selected for the given time
                         if (item.meal[0].name == meal_modal.name) {
                             return true; // selected --> don't show it
                         }
@@ -677,9 +686,9 @@ export default {
     border-bottom-right-radius: 0.5rem;
 }
 
-.nutritions_stats > div {
+.nutritions_stats>div {
     flex: 1;
-    min-width: 25%;    
+    min-width: 25%;
 }
 
 .proteins,
@@ -704,9 +713,9 @@ export default {
     width: 4em;
     height: 4em;
     border-radius: 50%;
-    background: 
+    background:
         radial-gradient(closest-side, white 79%, transparent 80% 100%),
-        conic-gradient(#647c58 var(--initial-progress), #d2dbcd 0);        
+        conic-gradient(#647c58 var(--initial-progress), #d2dbcd 0);
 }
 
 .progress-bar p {
@@ -722,7 +731,7 @@ export default {
         flex-wrap: wrap;
     }
 
-    .nutritions_stats > div {
+    .nutritions_stats>div {
         min-width: 50%;
     }
 }

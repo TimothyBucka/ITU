@@ -21,10 +21,6 @@
         </button>
     </div><br>
 
-    <!-- <div class="buttons">
-        <a class="btn btn-primary" href="#" @click="modalGetMeals">Add Meal</a>
-    </div> -->
-
     <div v-for="(meal, date) in meals" :key="date">
         <div class="calories_stats">
             <div class="icon">

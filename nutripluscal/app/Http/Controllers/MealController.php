@@ -43,7 +43,7 @@ class MealController extends Controller
         $meal->carbs = $request->carbs;
         $meal->fats = $request->fats;
         $meal->fibers = $request->fibers;
-        $meal->photo_path = $request->photo_path; // TODO: add photo path
+        $meal->photo_path = $request->photo_path;
         $meal->restaurant_id = null;
 
         // // chceck if the numbers are not negative

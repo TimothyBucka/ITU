@@ -26,19 +26,53 @@
     </div>
 
     <div v-for="(meal, date) in meals" :key="date">
-        <div class="calories_stats">
-            <div class="icon">
-                <font-awesome-icon icon="utensils" />
-            </div>
+        <div class="stats">
+            <div class="calories_stats">
+                <div class="icon">
+                    <font-awesome-icon icon="utensils" />
+                </div>
 
-            <div class="calories_accepted">
-                <p>{{ totalCalories(meal) }}/{{ daily_intake }} kcal</p> <!-- TODO rework this to backend -->
-            </div>
+                <div class="calories_accepted">
+                    <p>{{ totalCalories(meal) }}/{{ daily_intake }} kcal</p> <!-- TODO rework this to backend -->
+                </div>
 
-            <div class="percents">
-                <p>{{ ( (daily_intake ? (totalCalories(meal) / daily_intake) : 0) * 100).toFixed(1) }}%</p>
+                <div class="percents">
+                    <p>{{ ( (daily_intake ? (totalCalories(meal) / daily_intake) : 0) * 100).toFixed(1) }}%</p>
+                </div>
+
+            </div><br>
+            <div class="nutritions_stats">
+
+                <div class="proteins">
+                    <p>Proteins: {{ totalNutritions(meal).proteins }}g</p>
+                    <div class="progress-bar" :style="{ '--initial-progress': ((totalNutritions(meal).proteins / getPercentage(daily_intake).proteinsPercentage) * 100 ) + '%' }">
+                        <p>{{ ((totalNutritions(meal).proteins / getPercentage(daily_intake).proteinsPercentage) * 100 ).toFixed(1) }}%</p>
+                    </div>
+                </div>
+    
+                <div class="fibers">
+                    <p>Fibers: {{ totalNutritions(meal).fibers }}g</p>
+                    <div class="progress-bar" :style="{ '--initial-progress': ((totalNutritions(meal).fibers / getPercentage(daily_intake).fibersPercentage) * 100 ) + '%' }">
+                        <p>{{ ((totalNutritions(meal).fibers / getPercentage(daily_intake).fibersPercentage) * 100 ).toFixed(1) }}%</p>
+                    </div>
+                </div>
+    
+                <div class="fats">
+                    <p>Fats: {{ totalNutritions(meal).fats }}g</p>
+                    <div class="progress-bar" :style="{ '--initial-progress': ((totalNutritions(meal).fats / getPercentage(daily_intake).fatsPercentage) * 100 ) + '%' }">
+                        <p>{{ ((totalNutritions(meal).fats / getPercentage(daily_intake).fatsPercentage) * 100 ).toFixed(1) }}%</p>
+                    </div>
+                </div>
+    
+                <div class="carbs">
+                    <p>Carbs: {{ totalNutritions(meal).carbs }}g</p>
+                    <div class="progress-bar" :style="{ '--initial-progress': ((totalNutritions(meal).carbs / getPercentage(daily_intake).carbsPercentage) * 100 ) + '%' }">
+                        <p>{{ ((totalNutritions(meal).carbs / getPercentage(daily_intake).carbsPercentage) * 100 ).toFixed(1) }}%</p>
+                    </div>
+                </div>
             </div>
-        </div><br>
+        </div>
+        
 
         <div v-for="(item, index) in meal" :key="index">
             <div class="accordion" id="mealAccordion">
@@ -72,7 +106,7 @@
             </div>
         </div>
 
-        </div>
+    </div>
         <transition name="fade">
             <div v-if="show_modal" class="modal">
                 <div class="modal-content">
@@ -98,6 +132,7 @@
 <script>
 import { parse, format } from 'date-fns';
 
+
 export default {
     data() {
         return {
@@ -107,6 +142,7 @@ export default {
             all_meals: {},
             selected_date: null,
             current_index: 0,
+            calculatedPercentage: 0,
             can_navigate: true,
             show_modal: false,
             selected_meal: [] // selected meals from the modal
@@ -124,6 +160,7 @@ export default {
     },
 
     methods: {
+
         totalCalories(meal) {
             let total = 0;
             if (meal) {
@@ -134,6 +171,49 @@ export default {
                         break;
                     }
                 }
+            }
+            return total;
+        },
+
+        totalNutritions(meal) {
+            let total = {
+                proteins: 0,
+                fibers: 0,
+                fats: 0,
+                carbs: 0
+            };
+            if (meal) {
+                for (let item of meal) {
+                    if (Array.isArray(item.meal) && item.meal.length > 0) { // chceck if there is something in the field
+                        total.proteins += item.meal[0].proteins;
+                        total.fibers += item.meal[0].fibers;
+                        total.fats += item.meal[0].fats;
+                        total.carbs += item.meal[0].carbs;
+                    } else {
+                        break;
+                    }
+                }
+            }
+            return total;
+        },
+
+        getPercentage(value) {
+            let total = {
+                proteinsPercentage: 0,
+                fibersPercentage: 0,
+                fatsPercentage: 0,
+                carbsPercentage: 0
+            };
+            if (value) {
+                total.proteinsPercentage = (value*0.25)/4;
+                total.fibersPercentage = (value*0.1)/10;
+                total.fatsPercentage = (value*0.25)/9;
+                total.carbsPercentage = (value*0.52)/4;
+            } else {
+                total.proteinsPercentage = 0;
+                total.fibersPercentage = 0;
+                total.fatsPercentage = 0;
+                total.carbsPercentage = 0;
             }
             return total;
         },
@@ -452,17 +532,21 @@ export default {
     margin-right: 10px;
 }
 
+.stats {
+    margin: 2% 0;
+    display: grid;
+}
+
 .calories_stats {
     display: flex;
     justify-content: space-around;
     align-items: center;
     padding: 10px 0;
     background: #647c58;
-    border: 1px solid #dee2e6;
-    border-radius: .25rem;
-    margin-top: 2%;
     color: white;
     font-size: 23px;
+    border-top-right-radius: 0.25rem;
+    border-top-left-radius: 0.25rem;
 }
 
 .calories_stats p {
@@ -474,5 +558,66 @@ export default {
 .icon {
     flex: 1;
     text-align: center;
+}
+
+.nutritions_stats {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-top: none;
+    border-bottom-left-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+}
+
+.nutritions_stats > div {
+    flex: 1;
+    min-width: 25%;    
+}
+
+.proteins,
+.fibers,
+.fats,
+.carbs {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+}
+
+.nutritions_stats p {
+    white-space: nowrap;
+}
+
+.progress-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 4em;
+    height: 4em;
+    border-radius: 50%;
+    background: 
+        radial-gradient(closest-side, white 79%, transparent 80% 100%),
+        conic-gradient(#647c58 var(--initial-progress), #d2dbcd 0);        
+}
+
+.progress-bar p {
+    margin-top: 1em;
+    margin-left: 0.25em;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+
+@media only screen and (max-width: 500px) {
+    .nutritions_stats {
+        flex-wrap: wrap;
+    }
+
+    .nutritions_stats > div {
+        min-width: 50%;
+    }
 }
 </style>

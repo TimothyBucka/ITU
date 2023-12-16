@@ -32,6 +32,7 @@
         border-radius: 5px;
         overflow: hidden;
         border: 1px solid lightgrey;
+        margin-right: .5rem;
     }
 
     .tile .rest-cover {
@@ -44,7 +45,10 @@
         padding: 0.5em;
     }
 
-    .tile .rest-info h5 {}
+    .tile .rest-info h5 {
+        margin-bottom: 0;
+        white-space: nowrap;
+    }
 
     .tile .rest-info p {
         margin: 0;

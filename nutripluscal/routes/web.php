@@ -20,6 +20,9 @@ Route::get('/', function () {
 Route::get('/restaurants', function () {
     return view('welcome');
 });
+Route::get('/restaurants/{id}', function () {
+    return view('welcome');
+});
 
 Route::get('/y_meals', function () {
     return view('welcome');

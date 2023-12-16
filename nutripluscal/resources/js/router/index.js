@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from "vue-router";
 
-import restaurants  from "../views/restaurants.vue";
+import home from "../views/home.vue";
+import restaurants from "../views/restaurants.vue";
+import restaurant from "../views/restaurant.vue";
 import your_meals from "../views/your_meals.vue";
 import calendar from "../views/calendar.vue";
 import account from "../views/account.vue";
@@ -20,6 +22,11 @@ const routes = [
         path: "/restaurants",
         component: restaurants,
         name: "restaurants",
+    },
+    {
+        path: "/restaurants/:id",
+        component: restaurant,
+        name: "restaurants/id",
     },
     {
         path: "/y_meals",

@@ -32,11 +32,11 @@
             </div>
 
             <div class="calories_accepted">
-                <p>{{ totalCalories }}/{{ daily_intake }} kcal</p> <!-- TODO rework this to backend -->
+                <p>{{ totalCalories(meal) }}/{{ daily_intake }} kcal</p> <!-- TODO rework this to backend -->
             </div>
 
             <div class="percents">
-                <p>{{ ( (daily_intake ? (totalCalories / daily_intake) : 0) * 100).toFixed(1) }}%</p>
+                <p>{{ ( (daily_intake ? (totalCalories(meal) / daily_intake) : 0) * 100).toFixed(1) }}%</p>
             </div>
         </div><br>
 
@@ -123,11 +123,11 @@ export default {
         }
     },
 
-    computed: { // computed is for the data that is calculated from the data that is already in the component
-        totalCalories() {
+    methods: {
+        totalCalories(meal) {
             let total = 0;
-            if (this.meals[this.selected_date] && this.meals != undefined) {
-                for (let item of this.meals[this.selected_date]) {
+            if (meal) {
+                for (let item of meal) {
                     if (Array.isArray(item.meal) && item.meal.length > 0) { // chceck if there is something in the field
                         total += item.meal[0].calories;
                     } else {
@@ -137,9 +137,7 @@ export default {
             }
             return total;
         },
-    },
 
-    methods: {
         delete_meal(meal_id) { // delete meal from the database
             axios
                 .post('/api/meals/eaten/delete/' + meal_id)
@@ -328,7 +326,6 @@ export default {
     },
 }
 //TODO
-//delete add activity
 // zobrazenie podla skupin, ranajky, obed vecera, pricom kazda z tychto skupin ma vlastny add
 // a vyber porcie
 </script>

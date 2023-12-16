@@ -26,7 +26,6 @@
     </div> -->
 
     <div v-for="(meal, date) in meals" :key="date">
-        <h2>{{ date }}</h2>
         <div class="calories_stats">
             <div class="icon">
                 <font-awesome-icon icon="utensils" />

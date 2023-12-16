@@ -5,13 +5,13 @@ import App from './app.vue';
 import ToastPlugin from 'vue-toast-notification';
 import 'vue-toast-notification/dist/theme-bootstrap.css';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faUtensils } from '@fortawesome/free-solid-svg-icons';
+import { faUtensils, faPlus, faInfoCircle, faRemove } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { OnClickOutside } from '@vueuse/components'; 
 
 const app = createApp({});
 
-library.add(faUtensils);
+library.add(faUtensils, faPlus, faInfoCircle, faRemove);
 
 // global components
 app.component("app-component", App);

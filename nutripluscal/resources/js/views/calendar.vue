@@ -71,8 +71,7 @@
                     </div>
                 </div>
             </div>
-        </div>
-        
+        </div>        
 
         <div class="accordion" id="accordion">
             <div class="accordion-item" v-for="(accordion, index) in accordions" :key="index">
@@ -85,7 +84,7 @@
                     </button>
                     <button class="btn btn-primary add-meal-btn" @click="modalGetMeals(accordion.name)"
                         :class="{ 'collapsed': isActive !== index }">
-                        +
+                        <font-awesome-icon icon="plus" />
                     </button>
                 </h2>
                 <div :id="'collapse' + accordion.id" class="accordion-collapse collapse"
@@ -93,18 +92,25 @@
                     <div class="accordion-body">
                         <div v-for="(item, index) in meal" :key="index">
                             <div v-if="item.meal_time === accordion.name">
-                                <div v-if="(item.meals != undefined || item.meal != null)">
-                                    {{ item.meal[0].name }} ({{ item.meal[0].calories }} kcal)
-                                </div>
-                                <div v-if="item.meals != undefined || item.meal != null">
-                                    <strong>Calories:</strong> {{ item.meal[0].calories }}<br>
-                                    <strong>Proteins:</strong> {{ item.meal[0].proteins }}<br>
-                                    <strong>Fibers:</strong> {{ item.meal[0].fibers }}<br>
-                                    <strong>Fats:</strong> {{ item.meal[0].fats }}<br>
-                                    <strong>Carbs:</strong> {{ item.meal[0].carbs }}
-                                    <div class="buttons">
-                                        <a class="btn btn-warning" href="#" @click="delete_meal(item.id)">Delete</a>
+                                <div class="food">
+                                    <div v-if="(item.meals != undefined || item.meal != null)">
+                                        <p>{{ item.meal[0].name }}</p>
+                                        <div class="foodButtons">
+                                            <p>{{ item.meal[0].calories }} kcal</p>
+                                            
+                                            
+                                            <div class="infoShow">
+                                                <infoPopup :meal="item.meal[0]" @close="closeInfoPopup" />
+                                            </div>
+
+                                            
+                                            <button class="btn foodbtn" href="#" @click="delete_meal(item.id)">
+                                                <font-awesome-icon icon="remove" />
+                                            </button>
+                                        </div>
                                     </div>
+                                    <p>Portion: {{ item.meal[0].portion_size }} </p>
+                                    <!-- TODO  portion robi adam -->
                                 </div>
                             </div>
                         </div>
@@ -134,11 +140,12 @@
             </div>
         </transition>
 
+
 </template>
 
 <script>
 import { parse, format } from 'date-fns';
-
+import infoPopup from './components/infoPopup.vue';
 
 export default {
     data() {
@@ -159,10 +166,14 @@ export default {
             current_index: 0,
             calculatedPercentage: 0,
             can_navigate: true,
-            show_modal: false,
+            show_modal: false,  
 
             selected_meal: [] // selected meals from the modal
         }
+    },
+
+    components: {
+        infoPopup
     },
 
     created() { // when the component is created
@@ -179,6 +190,14 @@ export default {
         // toggle(index) { // toggle the accordion to change the color behind the button
         //     this.isActive = this.isActive === index ? null : index;
         // },
+
+        showInfo() {
+        this.showInfoPopup = true;
+        },
+        // Close the info popup
+        closeInfoPopup() {
+        this.showInfoPopup = false;
+        },
 
         totalCalories(meal) {
             let total = 0;
@@ -565,7 +584,7 @@ export default {
     padding: 10px 0;
     background: #647c58;
     color: white;
-    font-size: 23px;
+    font-size: 1.2em;
     border-top-right-radius: 0.25rem;
     border-top-left-radius: 0.25rem;
 }
@@ -595,9 +614,53 @@ export default {
     border-radius: 100%;
     padding: 0.1em 0.5em !important;
     vertical-align: middle;
-    font-size: 0.7em;
+    font-size: 0.8em;
     line-height: 1.4em;
+    margin-left: 0.4em;
 }
+
+.accordion-body {
+    padding: 0.25em 0.5em ;
+}
+.food p:first-child {
+    margin-bottom: 0;
+}
+
+.food div:first-child {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #dee2e6;
+    font-size: 1em;
+    font-weight: bold;
+    padding: 0.5em 0;
+}
+
+
+.foodButtons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1em;
+}
+.foodbtn {
+    display: flex;
+    border: none;
+    margin: 0;
+    padding: 0.1em 0.2em !important;
+    font-size: 1.5em;
+}
+
+.foodButtons p {
+    margin-right: 0.7em;
+    margin-bottom: 0;
+}
+
+.collapse {
+  &:not(.show) {
+    display: none;
+  }
+}
+
 
 /* .add-meal-btn:not(.collapsed) {
     background-color: #eaeaec;
@@ -627,7 +690,7 @@ export default {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 10px;
+    padding: 8px;
 }
 
 .nutritions_stats p {

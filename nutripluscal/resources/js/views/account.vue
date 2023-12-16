@@ -14,16 +14,19 @@
         <dataTile Name="Target Weight" DB_name="goal_target" :Value="data.goal_target" Unit="kg" Editable=true
             @body-data-updated="handleBodyDataUpdated" v-if="data.goal_target" />
         <dataTile Name="BMI" DB_name="bmi" :Value="data.bmi" Unit="" v-if="data.bmi" />
+        <TimePickerPopup :initialValue="data.wake_up_time" @save="handleWakeUpTimeUpdated" />
     </div>
 </template>
 
 <script>
+import TimePickerPopup from './components/TimePickerPopup.vue';
 import dataTile from './components/dataTile.vue'
 
 export default {
     components: {
-        dataTile,
-    },
+    dataTile,
+    TimePickerPopup
+},
     data() {
         return {
             data: {}

@@ -9,18 +9,17 @@
 </template>
 
 <script scoped>
-    export default {
-        props: ["Data"],
-        data() {
-            return {};
-        },
-        methods: {
-            getImageUrl(image) {
-                const imageUrl = new URL('/public/img/' + image, import.meta.url);
-                return imageUrl;
-            }
-        },
-    }
+import { getImageUrl } from "../../helpers";
+
+export default {
+    props: ["Data"],
+    data() {
+        return {};
+    },
+    methods: {
+        getImageUrl,
+    },
+}
 </script>
 
 <style scoped>

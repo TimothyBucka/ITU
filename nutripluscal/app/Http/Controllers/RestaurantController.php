@@ -39,7 +39,9 @@ class RestaurantController extends Controller
      */
     public function show(string $id)
     {
-        $rest_data = Restaurants::findOrFail($id);
+        $rest_data = Restaurants::with(['meals' => function ($q) {
+            $q->orderBy('name', 'asc');
+        }])->findOrFail($id);
 
         return new Restaurants_data_resource($rest_data);
     }

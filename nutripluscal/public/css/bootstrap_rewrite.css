@@ -20,13 +20,17 @@
 
 }
 
-
 .btn-warning {
     background-color: #b60707bb !important;
     color: white !important;
     border: none !important;
     padding: 0.5em 2em !important;
     border-radius: 2px;
+}
+
+.form-select:focus {
+    box-shadow: none !important;
+    border-color: darkolivegreen;
 }
 
 /***************************** NAVBAR ****************************/

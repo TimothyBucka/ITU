@@ -30,6 +30,7 @@
             </div>
         </div>
     </section>
+
 </template>
 
 <script>
@@ -63,10 +64,10 @@ export default {
 .wrapper {
     width: 100%;
     overflow: scroll;
+    overflow-y: hidden;
 }
 
 .slider {
-    overflow: scroll;
     display: flex;
     width: fit-content;
 }

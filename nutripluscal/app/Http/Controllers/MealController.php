@@ -89,11 +89,11 @@ class MealController extends Controller
      */
     public function add_meal_to_meal_eaten(Request $request)
     {
-
         $meal_eaten = new Meals_eaten;
         $meal_eaten->portion_size = 50;
         $meal_eaten->date_of_eat = $request->date;
         $meal_eaten->meal_id = $request->id;
+        $meal_eaten->meal_time = $request->time_of_meal;
 
         // get the name of the meal
         $meal_name = Meal::findOrFail($request->id)->name;
@@ -127,21 +127,21 @@ class MealController extends Controller
     public function show_meals_based_on_date(string $date)
     {
         $meal_data = Meal::all();
-        //$meal_data = $meal_data->where('restaurant_id', null)->all(); //
         $eaten_at_date = [];
+
         foreach ($meal_data as $id => $meal) {
             $tmp = $meal->meals_eaten()->get(); // get the meals eaten based on the meal id
-            $eaten_at_date = array_merge($eaten_at_date, $tmp->where('date_of_eat', $date)->all()); // get the meals eaten based on the date
-
+            $eaten_at_date = array_merge($eaten_at_date, $tmp->where('date_of_eat', $date)->all()); // get the meals eaten based on the date and time of the meal
         }
-
-        foreach ($eaten_at_date as $id => $meal) {
+    
+        foreach ($eaten_at_date as $id => $meal) { 
             $tmp = $meal->meals()->get(); // get the meals eaten based on the meal id
             $eaten_at_date[$id]['meal'] = $tmp->all(); // get the meals eaten based on the date
         }
-
+    
         return $eaten_at_date;
     }
+    
 
     /**
      * Show the form for editing the specified resource.
@@ -209,7 +209,7 @@ class MealController extends Controller
         $meal_eaten = Meals_eaten::where('meal_id', $id)->first();
         if ($meal_eaten) {
             return response()->json([
-                'message' => 'Meal is already used in the meal_eaten'
+                'message' => 'Meal is already used in the Calendar'
             ], 400);
         }
 

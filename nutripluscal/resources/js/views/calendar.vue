@@ -21,9 +21,9 @@
         </button>
     </div><br>
 
-    <div class="buttons">
+    <!-- <div class="buttons">
         <a class="btn btn-primary" href="#" @click="modalGetMeals">Add Meal</a>
-    </div>
+    </div> -->
 
     <div v-for="(meal, date) in meals" :key="date">
         <div class="stats">
@@ -74,30 +74,37 @@
         </div>
         
 
-        <div v-for="(item, index) in meal" :key="index">
-            <div class="accordion" id="mealAccordion">
-                <div class="accordion-item">
-                    <h2 class="accordion-header" :id="'heading' + index">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                            :data-bs-target="'#collapse' + index" aria-expanded="false"
-                            :aria-controls="'collapse' + index">
-                            <div v-if="item.meals != undefined || item.meal != null">
-                                {{ item.meal[0].name }} ({{ item.meal[0].calories }} kcal)
-                            </div>
-                        </button>
-                    </h2>
-                    <div :id="'collapse' + index" class="accordion-collapse collapse"
-                        aria-labelledby="'heading' + index"
-                        :data-bs-parent="isActive === index ? '#mealAccordion' : null">
-                        <div class="accordion-body">
-                            <div v-if="item.meals != undefined || item.meal != null">
-                                <strong>Calories:</strong> {{ item.meal[0].calories }}<br>
-                                <strong>Proteins:</strong> {{ item.meal[0].proteins }}<br>
-                                <strong>Fibers:</strong> {{ item.meal[0].fibers }}<br>
-                                <strong>Fats:</strong> {{ item.meal[0].fats }}<br>
-                                <strong>Carbs:</strong> {{ item.meal[0].carbs }}
-                                <div class="buttons">
-                                    <a class="btn btn-warning" href="#" @click="delete_meal(item.id)">Delete</a>
+        <div class="accordion" id="accordion">
+            <div class="accordion-item" v-for="(accordion, index) in accordions" :key="index">
+                <h2 class="accordion-header" :id="'heading' + accordion.id">
+
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        :data-bs-target="'#collapse' + accordion.id" aria-expanded="false"
+                        :aria-controls="'collapse' + accordion.id"> <!--@click="toggle(index)"-->
+                        <p>{{ accordion.name }}</p>
+                    </button>
+                    <button class="btn btn-primary add-meal-btn" @click="modalGetMeals(accordion.name)"
+                        :class="{ 'collapsed': isActive !== index }">
+                        +
+                    </button>
+                </h2>
+                <div :id="'collapse' + accordion.id" class="accordion-collapse collapse"
+                    aria-labelledby="'heading' + item.id" :data-bs-parent="isActive === index ? '#accordion' : null">
+                    <div class="accordion-body">
+                        <div v-for="(item, index) in meal" :key="index">
+                            <div v-if="item.meal_time === accordion.name">
+                                <div v-if="(item.meals != undefined || item.meal != null)">
+                                    {{ item.meal[0].name }} ({{ item.meal[0].calories }} kcal)
+                                </div>
+                                <div v-if="item.meals != undefined || item.meal != null">
+                                    <strong>Calories:</strong> {{ item.meal[0].calories }}<br>
+                                    <strong>Proteins:</strong> {{ item.meal[0].proteins }}<br>
+                                    <strong>Fibers:</strong> {{ item.meal[0].fibers }}<br>
+                                    <strong>Fats:</strong> {{ item.meal[0].fats }}<br>
+                                    <strong>Carbs:</strong> {{ item.meal[0].carbs }}
+                                    <div class="buttons">
+                                        <a class="btn btn-warning" href="#" @click="delete_meal(item.id)">Delete</a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -137,6 +144,14 @@ export default {
     data() {
         return {
             dates: [],
+            isActive: null, // to chnage the color behinfd the accordion button
+            time_of_meal: null, // breakfast, lunch, dinner, snack
+            accordions: [
+                { id: 1, name: 'Breakfast' },
+                { id: 2, name: 'Lunch' },
+                { id: 3, name: 'Dinner' },
+                { id: 4, name: 'Snack' },
+            ], // to generate accordions 
             daily_intake: 0,
             meals: {},
             all_meals: {},
@@ -145,6 +160,7 @@ export default {
             calculatedPercentage: 0,
             can_navigate: true,
             show_modal: false,
+
             selected_meal: [] // selected meals from the modal
         }
     },
@@ -160,6 +176,9 @@ export default {
     },
 
     methods: {
+        // toggle(index) { // toggle the accordion to change the color behind the button
+        //     this.isActive = this.isActive === index ? null : index;
+        // },
 
         totalCalories(meal) {
             let total = 0;
@@ -242,7 +261,8 @@ export default {
                 });
         },
 
-        modalGetMeals() { // fetch the meals from the database to the modal
+        modalGetMeals(type_of_meal_arg) { // fetch the meals from the database to the modal
+            this.time_of_meal = type_of_meal_arg; // dinner, lunch ...
             this.all_meals = {};
             axios.get('/api/meals/').then(response => {
                 this.all_meals = response.data.data;
@@ -283,8 +303,9 @@ export default {
         },
 
         addSelectedMeal() {
-            // Send the selected meals to the API (post request) and cycle through the array with the index from 0 to n
+            // Send the selected meals to the API (post request) and cycle through the array
             for (let i = 0; i < this.selected_meal.length; i++) {
+                this.selected_meal[i].time_of_meal = this.time_of_meal;
                 this.selected_meal[i].date = this.selected_date;
                 axios
                     .post('/api/meals/eaten/', this.selected_meal[i])
@@ -340,10 +361,10 @@ export default {
                 this.formated_date = this.formatDate(this.dates[this.current_index]); // format the last date
                 this.retrieveMeals(this.formated_date); // retrieve the meals for the last date
             })
-            .catch(error => {
-                console.log(error);
+                .catch(error => {
+                    console.log(error);
 
-            });
+                });
 
             var url = '/api/body/1';
             axios.get(url).then(response => {
@@ -406,7 +427,7 @@ export default {
     },
 }
 //TODO
-// zobrazenie podla skupin, ranajky, obed vecera, pricom kazda z tychto skupin ma vlastny add
+// zobrazenie podla skupin, ranajky, obed vecera, pricom kazda z tychto skupin ma vlastny add -- DONE
 // a vyber porcie
 </script>
 
@@ -559,6 +580,28 @@ export default {
     flex: 1;
     text-align: center;
 }
+
+/*----------------------------- Accordion -----------------------------*/
+.accordion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #556B2F;
+    border-radius: 5px;
+}
+
+.add-meal-btn {
+    margin-left: auto;
+    border-radius: 100%;
+    padding: 0.1em 0.5em !important;
+    vertical-align: middle;
+    font-size: 0.7em;
+    line-height: 1.4em;
+}
+
+/* .add-meal-btn:not(.collapsed) {
+    background-color: #eaeaec;
+} */
 
 .nutritions_stats {
     display: flex;

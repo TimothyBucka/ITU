@@ -3,11 +3,19 @@
     background-color: black;
 }
 
+.accordion-item {
+    border-radius: 5px;
+}
+
 .btn-primary {
     background-color: #556B2F !important;
     border: none !important;
     padding: 0.5em 2em !important;
     border-radius: 2px;
+}
+
+.accordion-button:is(.collapsed){
+    border-radius: 5px;
 }
 
 .accordion-button:focus {
@@ -17,9 +25,7 @@
 .accordion-button:not(.collapsed) {
     background-color: #eaeaec;
     color: black;
-
 }
-
 
 .btn-warning {
     background-color: #b60707bb !important;

@@ -3,7 +3,7 @@
         <nav class="navbar navbar-expand-md bg-body-tertiary" data-bs-theme="dark">
             <div class="container-fluid">
                 <div>
-                    <router-link to="/"><img id="logo" src="../../public/img/Logo_NPC_Black.png" alt="Logo"></router-link>
+                    <router-link to="/"><img id="logo" src="../../public/img/Logo_NPC_White.png" alt="Logo"></router-link>
                     <router-link class="navbar-brand" to="/">NutriPlusCal</router-link>
                 </div>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"

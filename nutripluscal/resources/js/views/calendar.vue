@@ -1,7 +1,7 @@
 <template>
     <h1 class="py-3">Calendar</h1>
 
-    <div id="carouselExample" class="carousel slide">
+    <div id="carouselExample" class="carousel slide"> <!--CAROUSEL -->
         <div class="carousel-inner">
             <div v-for="(date, index) in dates" :key="index" class="carousel-item"
                 :class="{ active: index == dates.length - 1 }">
@@ -21,49 +21,100 @@
         </button>
     </div><br>
 
-    <div class="buttons">
-        <a class="btn btn-primary" href="#" @click="modalGetMeals">Add Meal</a>
-    </div>
+    <div v-for="(meal, date) in meals" :key="date"> <!--GENERAL DIV -->
+        <div class="stats">
+            <div class="calories_stats">
+                <div class="icon">
+                    <font-awesome-icon icon="utensils" />
+                </div>
 
-    <div v-for="(meal, date) in meals" :key="date">
-        <div class="calories_stats">
-            <div class="icon">
-                <font-awesome-icon icon="utensils" />
+                <div class="calories_accepted">
+                    <p>{{ totalCalories(meal) }}/{{ daily_intake }} kcal</p> <!-- TODO rework this to backend -->
+                </div>
+
+                <div class="percents">
+                    <p>{{ ((daily_intake ? (totalCalories(meal) / daily_intake) : 0) * 100).toFixed(1) }}%</p>
+                </div>
+
             </div>
+            <div class="nutritions_stats">
 
-            <div class="calories_accepted">
-                <p>{{ totalCalories(meal) }}/{{ daily_intake }} kcal</p> <!-- TODO rework this to backend -->
+                <div class="proteins">
+                    <p>Proteins: {{ totalNutritions(meal).proteins }}g</p>
+                    <div class="progress-bar"
+                        :style="{ '--initial-progress': ((totalNutritions(meal).proteins / getPercentage(daily_intake).proteinsPercentage) * 100) + '%' }">
+                        <p>{{ ((totalNutritions(meal).proteins / getPercentage(daily_intake).proteinsPercentage) * 100
+                        ).toFixed(1) }}%</p>
+                    </div>
+                </div>
+
+                <div class="fibers">
+                    <p>Fibers: {{ totalNutritions(meal).fibers }}g</p>
+                    <div class="progress-bar"
+                        :style="{ '--initial-progress': ((totalNutritions(meal).fibers / getPercentage(daily_intake).fibersPercentage) * 100) + '%' }">
+                        <p>{{ ((totalNutritions(meal).fibers / getPercentage(daily_intake).fibersPercentage) * 100
+                        ).toFixed(1) }}%</p>
+                    </div>
+                </div>
+
+                <div class="fats">
+                    <p>Fats: {{ totalNutritions(meal).fats }}g</p>
+                    <div class="progress-bar"
+                        :style="{ '--initial-progress': ((totalNutritions(meal).fats / getPercentage(daily_intake).fatsPercentage) * 100) + '%' }">
+                        <p>{{ ((totalNutritions(meal).fats / getPercentage(daily_intake).fatsPercentage) * 100).toFixed(1)
+                        }}%</p>
+                    </div>
+                </div>
+
+                <div class="carbs">
+                    <p>Carbs: {{ totalNutritions(meal).carbs }}g</p>
+                    <div class="progress-bar"
+                        :style="{ '--initial-progress': ((totalNutritions(meal).carbs / getPercentage(daily_intake).carbsPercentage) * 100) + '%' }">
+                        <p>{{ ((totalNutritions(meal).carbs / getPercentage(daily_intake).carbsPercentage) * 100
+                        ).toFixed(1) }}%</p>
+                    </div>
+                </div>
             </div>
+        </div>        
 
-            <div class="percents">
-                <p>{{ ( (daily_intake ? (totalCalories(meal) / daily_intake) : 0) * 100).toFixed(1) }}%</p>
-            </div>
-        </div><br>
+        <div class="accordion" id="accordion">
+            <div class="accordion-item" v-for="(accordion, index) in accordions" :key="index">
+                <h2 class="accordion-header" :id="'heading' + accordion.id">
 
-        <div v-for="(item, index) in meal" :key="index">
-            <div class="accordion" id="mealAccordion">
-                <div class="accordion-item">
-                    <h2 class="accordion-header" :id="'heading' + index">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                            :data-bs-target="'#collapse' + index" aria-expanded="false"
-                            :aria-controls="'collapse' + index">
-                            <div v-if="item.meals != undefined || item.meal != null">
-                                {{ item.meal[0].name }} ({{ item.meal[0].calories }} kcal)
-                            </div>
-                        </button>
-                    </h2>
-                    <div :id="'collapse' + index" class="accordion-collapse collapse"
-                        aria-labelledby="'heading' + index"
-                        :data-bs-parent="isActive === index ? '#mealAccordion' : null">
-                        <div class="accordion-body">
-                            <div v-if="item.meals != undefined || item.meal != null">
-                                <strong>Calories:</strong> {{ item.meal[0].calories }}<br>
-                                <strong>Proteins:</strong> {{ item.meal[0].proteins }}<br>
-                                <strong>Fibers:</strong> {{ item.meal[0].fibers }}<br>
-                                <strong>Fats:</strong> {{ item.meal[0].fats }}<br>
-                                <strong>Carbs:</strong> {{ item.meal[0].carbs }}
-                                <div class="buttons">
-                                    <a class="btn btn-warning" href="#" @click="delete_meal(item.id)">Delete</a>
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        :data-bs-target="'#collapse' + accordion.id" aria-expanded="false"
+                        :aria-controls="'collapse' + accordion.id"> <!--@click="toggle(index)"-->
+                        <p>{{ accordion.name }}</p>
+                    </button>
+                    <button class="btn btn-primary add-meal-btn" @click="modalGetMeals(accordion.name)"
+                        :class="{ 'collapsed': isActive !== index }">
+                        <font-awesome-icon icon="plus" />
+                    </button>
+                </h2>
+                <div :id="'collapse' + accordion.id" class="accordion-collapse collapse"
+                    aria-labelledby="'heading' + item.id" :data-bs-parent="isActive === index ? '#accordion' : null">
+                    <div class="accordion-body">
+                        <div v-for="(item, index) in meal" :key="index">
+                            <div v-if="item.meal_time === accordion.name">
+                                <div class="food">
+                                    <div v-if="(item.meals != undefined || item.meal != null)">
+                                        <p>{{ item.meal[0].name }}</p>
+                                        <div class="foodButtons">
+                                            <p>{{ item.meal[0].calories*item.portion_size }} kcal</p>
+                                            
+                                            
+                                            <div class="infoShow">
+                                                <infoPopup :meal="item.meal[0]" :portion="item.portion_size" @close="closeInfoPopup" />
+                                            </div>
+
+                                            
+                                            <button class="btn foodbtn" href="#" @click="delete_meal(item.id)">
+                                                <font-awesome-icon icon="remove" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <p>Portion: {{ item.portion_size }} </p>
+                                    <!-- TODO  portion robi adam -->
                                 </div>
                             </div>
                         </div>
@@ -72,18 +123,24 @@
             </div>
         </div>
 
-        </div>
-        <transition name="fade">
+        <transition name="fade"> <!--MEAL MODAL -->
             <div v-if="show_modal" class="modal">
                 <div class="modal-content">
                     <span class="close" @click="closeModal">&times;</span>
                     <p>Select a meal:</p>
                     <div class="meal-list">
                         <div v-for="(meal, index) in all_meals" :key="index" @click="selectMeal(meal)">
-                            <div v-if="!isMealAlreadyAdded(meal)">
+                            <div v-if="!isMealAlreadyAdded(meal, accordion)">
                                 <div class="meal-modal-div">
                                     <p>{{ meal.name }}</p>
-                                    <!-- TODO portion size -->
+                                    <select class="form-select form-select-sm" aria-label="Small select example" v-model="meal.portion_size">
+                                        <option selected value="1.0">1x</option>
+                                        <option value="0.5">0.5x</option>
+                                        <option value="1.5">1.5x</option>        
+                                        <option value="2.0">2x</option>
+                                        <option value="2.5">2.5x</option>
+                                        <option value="3.0">3x</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -92,25 +149,42 @@
                 </div>
             </div>
         </transition>
+    </div>
+
 
 </template>
 
 <script>
 import { parse, format } from 'date-fns';
+import infoPopup from './components/infoPopup.vue';
 
 export default {
     data() {
         return {
             dates: [],
+            isActive: null, // to chnage the color behinfd the accordion button
+            time_of_meal: null, // breakfast, lunch, dinner, snack
+            accordions: [
+                { id: 1, name: 'Breakfast' },
+                { id: 2, name: 'Lunch' },
+                { id: 3, name: 'Dinner' },
+                { id: 4, name: 'Snack' },
+            ], // to generate accordions 
             daily_intake: 0,
             meals: {},
             all_meals: {},
             selected_date: null,
             current_index: 0,
+            calculatedPercentage: 0,
             can_navigate: true,
-            show_modal: false,
+            show_modal: false,  
+
             selected_meal: [] // selected meals from the modal
         }
+    },
+
+    components: {
+        infoPopup
     },
 
     created() { // when the component is created
@@ -124,6 +198,18 @@ export default {
     },
 
     methods: {
+        // toggle(index) { // toggle the accordion to change the color behind the button
+        //     this.isActive = this.isActive === index ? null : index;
+        // },
+
+        showInfo() {
+        this.showInfoPopup = true;
+        },
+        // Close the info popup
+        closeInfoPopup() {
+        this.showInfoPopup = false;
+        },
+
         totalCalories(meal) {
             let total = 0;
             if (meal) {
@@ -134,6 +220,49 @@ export default {
                         break;
                     }
                 }
+            }
+            return total;
+        },
+
+        totalNutritions(meal) {
+            let total = {
+                proteins: 0,
+                fibers: 0,
+                fats: 0,
+                carbs: 0
+            };
+            if (meal) {
+                for (let item of meal) {
+                    if (Array.isArray(item.meal) && item.meal.length > 0) { // chceck if there is something in the field
+                        total.proteins += item.meal[0].proteins;
+                        total.fibers += item.meal[0].fibers;
+                        total.fats += item.meal[0].fats;
+                        total.carbs += item.meal[0].carbs;
+                    } else {
+                        break;
+                    }
+                }
+            }
+            return total;
+        },
+
+        getPercentage(value) {
+            let total = {
+                proteinsPercentage: 0,
+                fibersPercentage: 0,
+                fatsPercentage: 0,
+                carbsPercentage: 0
+            };
+            if (value) {
+                total.proteinsPercentage = (value * 0.25) / 4;
+                total.fibersPercentage = (value * 0.1) / 10;
+                total.fatsPercentage = (value * 0.25) / 9;
+                total.carbsPercentage = (value * 0.52) / 4;
+            } else {
+                total.proteinsPercentage = 0;
+                total.fibersPercentage = 0;
+                total.fatsPercentage = 0;
+                total.carbsPercentage = 0;
             }
             return total;
         },
@@ -162,7 +291,8 @@ export default {
                 });
         },
 
-        modalGetMeals() { // fetch the meals from the database to the modal
+        modalGetMeals(type_of_meal_arg) { // fetch the meals from the database to the modal
+            this.time_of_meal = type_of_meal_arg; // dinner, lunch ...
             this.all_meals = {};
             axios.get('/api/meals/').then(response => {
                 this.all_meals = response.data.data;
@@ -187,10 +317,9 @@ export default {
         selectMeal(meal) { // select a meal from the modal
             // chceck if the meal is already selected by the user
             let index = this.selected_meal.findIndex(selected_meal => selected_meal.id === meal.id);
-
             if (index === -1) {
+                meal.portion_size = meal.portion_size || 1;
                 this.selected_meal.push(meal); // add the meal to the selected meals
-
                 if (!this.meals[this.selected_date]) {
                     this.meals[this.selected_date] = [];
                 }
@@ -203,8 +332,9 @@ export default {
         },
 
         addSelectedMeal() {
-            // Send the selected meals to the API (post request) and cycle through the array with the index from 0 to n
+            // Send the selected meals to the API (post request) and cycle through the array
             for (let i = 0; i < this.selected_meal.length; i++) {
+                this.selected_meal[i].time_of_meal = this.time_of_meal;
                 this.selected_meal[i].date = this.selected_date;
                 axios
                     .post('/api/meals/eaten/', this.selected_meal[i])
@@ -237,7 +367,7 @@ export default {
         isMealAlreadyAdded(meal_modal) { // check if the meal is already added to the date
             if (this.meals[this.selected_date]) { // if there are meals for the selected date
                 for (let item of this.meals[this.selected_date]) { // loop through them
-                    if (Array.isArray(item.meal) && item.meal.length > 0) { // if the meal is already selected
+                    if (Array.isArray(item.meal) && item.meal.length > 0 && item.meal_time == this.time_of_meal) { // if the meal is already selected for the given time
                         if (item.meal[0].name == meal_modal.name) {
                             return true; // selected --> don't show it
                         }
@@ -260,10 +390,10 @@ export default {
                 this.formated_date = this.formatDate(this.dates[this.current_index]); // format the last date
                 this.retrieveMeals(this.formated_date); // retrieve the meals for the last date
             })
-            .catch(error => {
-                console.log(error);
+                .catch(error => {
+                    console.log(error);
 
-            });
+                });
 
             var url = '/api/body/1';
             axios.get(url).then(response => {
@@ -326,7 +456,7 @@ export default {
     },
 }
 //TODO
-// zobrazenie podla skupin, ranajky, obed vecera, pricom kazda z tychto skupin ma vlastny add
+// zobrazenie podla skupin, ranajky, obed vecera, pricom kazda z tychto skupin ma vlastny add -- DONE
 // a vyber porcie
 </script>
 
@@ -452,17 +582,21 @@ export default {
     margin-right: 10px;
 }
 
+.stats {
+    margin: 2% 0;
+    display: grid;
+}
+
 .calories_stats {
     display: flex;
     justify-content: space-around;
     align-items: center;
     padding: 10px 0;
     background: #647c58;
-    border: 1px solid #dee2e6;
-    border-radius: .25rem;
-    margin-top: 2%;
     color: white;
-    font-size: 23px;
+    font-size: 1.2em;
+    border-top-right-radius: 0.25rem;
+    border-top-left-radius: 0.25rem;
 }
 
 .calories_stats p {
@@ -474,5 +608,132 @@ export default {
 .icon {
     flex: 1;
     text-align: center;
+}
+
+/*----------------------------- Accordion -----------------------------*/
+.accordion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #556B2F;
+    border-radius: 5px;
+}
+
+.add-meal-btn {
+    margin-left: auto;
+    border-radius: 100%;
+    padding: 0.1em 0.5em !important;
+    vertical-align: middle;
+    font-size: 0.8em;
+    line-height: 1.4em;
+    margin-left: 0.4em;
+}
+
+.accordion-body {
+    padding: 0.25em 0.5em ;
+}
+.food p:first-child {
+    margin-bottom: 0;
+}
+
+.food div:first-child {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #dee2e6;
+    font-size: 1em;
+    font-weight: bold;
+    padding: 0.5em 0;
+}
+
+
+.foodButtons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1em;
+}
+.foodbtn {
+    display: flex;
+    border: none;
+    margin: 0;
+    padding: 0.1em 0.2em !important;
+    font-size: 1.5em;
+}
+
+.foodButtons p {
+    margin-right: 0.7em;
+    margin-bottom: 0;
+}
+
+.collapse {
+  &:not(.show) {
+    display: none;
+  }
+}
+
+
+/* .add-meal-btn:not(.collapsed) {
+    background-color: #eaeaec;
+} */
+
+.nutritions_stats {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-top: none;
+    border-bottom-left-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+}
+
+.nutritions_stats>div {
+    flex: 1;
+    min-width: 25%;
+}
+
+.proteins,
+.fibers,
+.fats,
+.carbs {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 8px;
+}
+
+.nutritions_stats p {
+    white-space: nowrap;
+}
+
+.progress-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 4em;
+    height: 4em;
+    border-radius: 50%;
+    background:
+        radial-gradient(closest-side, white 79%, transparent 80% 100%),
+        conic-gradient(#647c58 var(--initial-progress), #d2dbcd 0);
+}
+
+.progress-bar p {
+    margin-top: 1em;
+    margin-left: 0.25em;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+
+@media only screen and (max-width: 500px) {
+    .nutritions_stats {
+        flex-wrap: wrap;
+    }
+
+    .nutritions_stats>div {
+        min-width: 50%;
+    }
 }
 </style>

@@ -100,11 +100,11 @@
                                     <div v-if="(item.meals != undefined || item.meal != null)">
                                         <p>{{ item.meal[0].name }}</p>
                                         <div class="foodButtons">
-                                            <p>{{ item.meal[0].calories }} kcal</p>
+                                            <p>{{ item.meal[0].calories*item.portion_size }} kcal</p>
                                             
                                             
                                             <div class="infoShow">
-                                                <infoPopup :meal="item.meal[0]" @close="closeInfoPopup" />
+                                                <infoPopup :meal="item.meal[0]" :portion="item.portion_size" @close="closeInfoPopup" />
                                             </div>
 
                                             
@@ -113,7 +113,7 @@
                                             </button>
                                         </div>
                                     </div>
-                                    <p>Portion: {{ item.meal[0].portion_size }} </p>
+                                    <p>Portion: {{ item.portion_size }} </p>
                                     <!-- TODO  portion robi adam -->
                                 </div>
                             </div>
@@ -149,6 +149,7 @@
                 </div>
             </div>
         </transition>
+    </div>
 
 
 </template>

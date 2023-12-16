@@ -9,11 +9,11 @@
             <span class="close" @click="closePopup">&times;</span>
         </div>
         <div class="body">
-                <strong>Calories:</strong> {{ meal.calories }}<br>
-                <strong>Proteins:</strong> {{ meal.proteins }}<br>
-                <strong>Fibers:</strong> {{ meal.fibers }}<br>
-                <strong>Fats:</strong> {{ meal.fats }}<br>
-                <strong>Carbs:</strong> {{ meal.carbs }}
+                <strong>Calories:</strong> {{ meal.calories*portion }}<br>
+                <strong>Proteins:</strong> {{ meal.proteins*portion }}<br>
+                <strong>Fibers:</strong> {{ meal.fibers*portion }}<br>
+                <strong>Fats:</strong> {{ meal.fats*portion }}<br>
+                <strong>Carbs:</strong> {{ meal.carbs*portion }}
         </div>
       </div>
     </div>
@@ -23,6 +23,9 @@
     export default {
         props: {
             meal: {
+                required: true,
+            },
+            portion: {
                 required: true,
             },
         },

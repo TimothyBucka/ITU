@@ -40,9 +40,9 @@ const routes = [
         name: "your_meals",
     },
     {
-        path: "/search_meals/:date/:meal_type/:meal_arg",
+        path: "/search_meals/:date/:meal_type",
         component: search_meals,
-        name: "search_meals/date/meal_type/meal_arg",
+        name: "search_meals/date/meal_type",
     },
     {
         path: "/calendar",

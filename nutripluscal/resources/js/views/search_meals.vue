@@ -52,12 +52,8 @@ export default {
   methods: {
     // Function to fetch meals from your database
     fetchMeals() {
-      let meal_arg = JSON.parse(this.$route.params.meal_arg);
-      let selectedMealIds = meal_arg.map(meal => meal.meal_id); // get the ids of the meals which are already selected
-      console.log(selectedMealIds);
       axios.get('/api/meals').then(response => {
         this.meals = response.data.data;
-
       });
     },
     // Function to filter meals based on the search query
@@ -72,7 +68,7 @@ export default {
         this.selected_meal.portion_size = null;
       }
 
-      if(meal.portion_size == null){ // if portion size is null, set it to 1 by default
+      if (meal.portion_size == null) { // if portion size is null, set it to 1 by default
         meal.portion_size = 1;
       }
 
@@ -89,9 +85,6 @@ export default {
         axios
           .post('/api/meals/eaten/', this.selected_meal)
           .then(response => {
-            // refresh the meal list to show only meals which are so far not added
-            this.meals = this.meals.filter(meal => meal.id !== this.selected_meal.id);
-
             this.$toast.success(response.data.message, { // notification
               position: 'bottom-right',
               duration: 2500,
@@ -109,6 +102,11 @@ export default {
             });
           });
         this.selected_meal = null; // reset the selected meal
+
+        // redirect to the calendar page
+        this.$router.push({
+          name: 'calendar',
+        });
       }
     },
 

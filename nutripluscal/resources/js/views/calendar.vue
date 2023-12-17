@@ -94,7 +94,7 @@ Authors: Adam Pap       (xpapad11)
                         :aria-controls="'collapse' + accordion.id">
                         <p>{{ accordion.name }}</p>
                     </button>
-                    <button class="btn btn-primary add-meal-btn" @click="modalGetMeals(accordion.name, meal)"
+                    <button class="btn btn-primary add-meal-btn" @click="modalGetMeals(accordion.name)"
                         :class="{ 'collapsed': isActive !== index }">
                         <font-awesome-icon icon="plus" />
                     </button>
@@ -127,36 +127,6 @@ Authors: Adam Pap       (xpapad11)
                 </div>
             </div>
         </div>
-
-        <transition name="fade"> <!--MEAL MODAL -->
-            <div v-if="show_modal" class="modal">
-                <div class="modal-content">
-                    <div class="header">
-                        <span class="close" @click="closeModal">&times;</span>
-                        <p>Select a meal:</p>
-                    </div>
-                    <div class="meal-list">
-                        <div v-for="(meal, index) in all_meals" :key="index" @click="selectMeal(meal)">
-                            <div v-if="!isMealAlreadyAdded(meal, accordion)">
-                                <div class="meal-modal-div">
-                                    <p>{{ meal.name }}</p>
-                                    <select class="form-select form-select-sm" aria-label="Small select example"
-                                        v-model="meal.portion_size">
-                                        <option selected value="1.0">1x</option>
-                                        <option value="0.5">0.5x</option>
-                                        <option value="1.5">1.5x</option>
-                                        <option value="2.0">2x</option>
-                                        <option value="2.5">2.5x</option>
-                                        <option value="3.0">3x</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <button @click="addSelectedMeal">Add</button>
-                </div>
-            </div>
-        </transition>
     </div>
 
     <div v-if="isToday(selected_date) && Object.keys(meals).length !== 0" class="recommended">
@@ -302,101 +272,12 @@ export default {
                 });
         },
 
-        modalGetMeals(type_of_meal_arg, meal_arg) { // fetch the meals from the database to the modal
-            // convert the meal_arg to string to be able to send it to the search component
-            let meal_arg_string;
-            if (meal_arg) {
-                meal_arg_string = JSON.stringify(meal_arg); // convert the meal_arg to string
-            }
+        modalGetMeals(type_of_meal_arg) { // fetch the meals from the database to the modal
             //reference to the search_meals.vue
             this.$router.push({
-                name: 'search_meals/date/meal_type/meal_arg', 
-                params: { date: this.selected_date, meal_type: type_of_meal_arg, meal_arg: meal_arg_string }
+                name: 'search_meals/date/meal_type', 
+                params: { date: this.selected_date, meal_type: type_of_meal_arg }
             });
-
-            // this.time_of_meal = type_of_meal_arg; // dinner, lunch ...
-            // this.all_meals = {};
-            // axios.get('/api/meals/').then(response => {
-            //     this.all_meals = response.data.data;
-            //     this.show_modal = true; // show the modal with the meals
-            // })
-            //     .catch(error => {
-            //         console.log(error);
-            //     });
-        },
-
-        closeModal() {
-            // when the meal is selected but the user closes the modal, update the meal object 
-            if (this.selected_meal.length > 0) {
-                this.meals[this.selected_date] =
-                    this.meals[this.selected_date].filter(selected_meal => selected_meal.id !== this.selected_meal[0].id); // remove the meal from the meals object
-            }
-
-            this.selected_meal = []; // reset the selected meals
-            this.show_modal = false;
-        },
-
-        selectMeal(meal) { // select a meal from the modal
-            // chceck if the meal is already selected by the user
-            let index = this.selected_meal.findIndex(selected_meal => selected_meal.id === meal.id);
-            if (index === -1) {
-                meal.portion_size = meal.portion_size || 1;
-                this.selected_meal.push(meal); // add the meal to the selected meals
-                if (!this.meals[this.selected_date]) {
-                    this.meals[this.selected_date] = [];
-                }
-                this.meals[this.selected_date].push(meal); // Add the selected meal to the meals object
-
-            } else {
-                this.selected_meal = this.selected_meal.filter(selected_meal => selected_meal.id !== meal.id); // remove the meal from the selected meals
-                this.meals[this.selected_date] = this.meals[this.selected_date].filter(selected_meal => selected_meal.id !== meal.id); // remove the meal from the meals object
-            }
-        },
-
-        addSelectedMeal() {
-            // Send the selected meals to the API (post request) and cycle through the array
-            for (let i = 0; i < this.selected_meal.length; i++) {
-                this.selected_meal[i].time_of_meal = this.time_of_meal;
-                this.selected_meal[i].date = this.selected_date;
-                axios
-                    .post('/api/meals/eaten/', this.selected_meal[i])
-                    .then(response => {
-                        this.retrieveMeals(this.selected_date); // Refresh it after added to show the new data
-
-                        this.$toast.success(response.data.message, { // notification
-                            position: 'bottom-right',
-                            duration: 2500,
-                            closeOnClick: true,
-                            pauseOnHover: true,
-                        });
-
-                        this.closeModal();
-                    })
-                    .catch(error => {
-                        console.log(error);
-                        this.$toast.error(response.data.message, {
-                            position: 'bottom-right',
-                            timeout: 2000,
-                            closeOnClick: true,
-                            pauseOnHover: true,
-                        });
-                    });
-            }
-
-            this.selected_meal = []; // reset the selected meals
-        },
-
-        isMealAlreadyAdded(meal_modal) { // check if the meal is already added to the date
-            if (this.meals[this.selected_date]) { // if there are meals for the selected date
-                for (let item of this.meals[this.selected_date]) { // loop through them
-                    if (Array.isArray(item.meal) && item.meal.length > 0 && item.meal_time == this.time_of_meal) { // if the meal is already selected for the given time
-                        if (item.meal[0].name == meal_modal.name) {
-                            return true; // selected --> don't show it
-                        }
-                    }
-                }
-            }
-            return false; // not selected --> good to go
         },
 
         formatDate(date_string) {

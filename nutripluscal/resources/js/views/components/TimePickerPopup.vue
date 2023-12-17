@@ -1,3 +1,4 @@
+<!-- Asi nevyuzijeme, ale mozno sa bude hodit v buducnosti -->
 <template>
     <div class="time-picker-popup">
       <div class="viewport" @wheel.prevent="handleScroll">

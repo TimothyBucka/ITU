@@ -156,7 +156,7 @@ export default {
 
             if (has_negative) {
                 this.$toast.error('Digit parameters must be positive numbers', {
-                    position: 'top-right',
+                    position: 'bottom-right',
                     timeout: 2000,
                     closeOnClick: true,
                     pauseOnHover: true,
@@ -179,7 +179,7 @@ export default {
                     this.showCreatedMeals(); // refresh the page when the meal is added
 
                     this.$toast.success(response.data.message, { // notification
-                        position: 'top-right',
+                        position: 'bottom-right',
                         duration: 2500,
                         closeOnClick: true,
                         pauseOnHover: true,
@@ -189,7 +189,7 @@ export default {
                 .catch(error => {
                     console.log(error);
                     this.$toast.error(error.response.data.message, {
-                        position: 'top-right',
+                        position: 'bottom-right',
                         timeout: 2000,
                         closeOnClick: true,
                         pauseOnHover: true,
@@ -212,7 +212,7 @@ export default {
                     this.showCreatedMeals(); // refresh the page when the meal is updated
 
                     this.$toast.success(response.data.message, { // notification
-                        position: 'top-right',
+                        position: 'bottom-right',
                         duration: 2500,
                         closeOnClick: true,
                         pauseOnHover: true,
@@ -222,7 +222,7 @@ export default {
                 .catch(error => {
                     console.log(error);
                     this.$toast.error(error.response.data.message, {
-                        position: 'top-right',
+                        position: 'bottom-right',
                         timeout: 2000,
                         closeOnClick: true,
                         pauseOnHover: true,
@@ -244,7 +244,7 @@ export default {
                     this.showCreatedMeals(this.selected_date); // refresh it after added to show the new data
 
                     this.$toast.success(response.data.message, { // notification
-                        position: 'top-right',
+                        position: 'bottom-right',
                         duration: 2500,
                         closeOnClick: true,
                         pauseOnHover: true,
@@ -253,7 +253,7 @@ export default {
                 .catch(error => {
                     console.log(error);
                     this.$toast.error(error.response.data.message, {
-                        position: 'top-right',
+                        position: 'bottom-right',
                         timeout: 2000,
                         closeOnClick: true,
                         pauseOnHover: true,

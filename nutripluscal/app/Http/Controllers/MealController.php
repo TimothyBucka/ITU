@@ -184,6 +184,8 @@ class MealController extends Controller
         $fats = $request->fats;
         $fibers = $request->fibers;
 
+        $photo_path = null;
+        
         if ($request->hasFile('photo')) {
             $request->validate([
                 'photo' => 'image|mimes:png,jpg,jpeg|max:2048'

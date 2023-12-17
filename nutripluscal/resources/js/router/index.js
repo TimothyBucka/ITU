@@ -14,6 +14,11 @@ import search_meals from "../views/search_meals.vue";
 
 const routes = [
     {
+        path: "/",
+        component: calendar,
+        name: "index",
+    },
+    {
         path: "/account",
         component: account,
         name: "account",

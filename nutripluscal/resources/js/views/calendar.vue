@@ -37,6 +37,7 @@
                 </div>
 
             </div>
+
             <div class="nutritions_stats">
 
                 <div class="proteins">
@@ -101,13 +102,11 @@
                                         <p>{{ item.meal[0].name }}</p>
                                         <div class="foodButtons">
                                             <p>{{ item.meal[0].calories*item.portion_size }} kcal</p>
-                                            
-                                            
+                                                                                        
                                             <div class="infoShow">
                                                 <infoPopup :meal="item.meal[0]" :portion="item.portion_size"/>
                                             </div>
 
-                                            
                                             <button class="btn foodbtn" href="#" @click="delete_meal(item.id)">
                                                 <font-awesome-icon icon="remove" />
                                             </button>
@@ -479,7 +478,7 @@ export default {
 }
 //TODO
 // zobrazenie podla skupin, ranajky, obed vecera, pricom kazda z tychto skupin ma vlastny add -- DONE
-// a vyber porcie
+// a vyber porcie --- DONE
 </script>
 
 <style scoped>

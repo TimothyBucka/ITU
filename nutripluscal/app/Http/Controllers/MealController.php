@@ -34,8 +34,7 @@ class MealController extends Controller
      * Store a newly crated meal.
      */
     public function store(Request $request)
-    {
-        //$is_negative = false;
+    {   $img_null = 0;
 
         $meal = new Meal;
         $meal->name = $request->name;
@@ -44,27 +43,19 @@ class MealController extends Controller
         $meal->carbs = $request->carbs;
         $meal->fats = $request->fats;
         $meal->fibers = $request->fibers;
-        $meal->photo_path = $request->photo_path;
         $meal->restaurant_id = null;
-
-        // // chceck if the numbers are not negative
-        // foreach ($meal->getAttributes() as $key => $value) {
-        //     if ($key == 'photo_path' || $key == 'restaurant_id') {
-        //         continue;
-        //     }
-
-        //     // reset the negative numbers all to 0
-        //     if ($value < 0) {
-        //         $meal->$key = 0;
-        //         $is_negative = true;
-        //     }
-        // }
-
-        // if ($is_negative) {
-        //     return response()->json([
-        //         'message' => 'Numbers cannot be negative'
-        //     ], 400);
-        // }
+        if ($request->hasFile('photo')) {
+            $request->validate([
+                'photo' => 'image|mimes:png,jpg,jpeg|max:2048'
+            ]);
+            $meal->photo_path = $request->file('photo')->getClientOriginalName();
+            $meal->photo_path = time() . '_' . $meal->photo_path; //new photo name based on time
+            $request->photo->move(public_path('img'), $meal->photo_path); // move the photo to the public/img folder
+        }else
+        {
+            $img_null = 1;
+            $meal->photo_path = 'img_placeholder.jpg';
+        }
 
         //check if the meal already exists
         $meal_exists = Meal::where('name', $meal->name)->first();
@@ -72,6 +63,20 @@ class MealController extends Controller
             return response()->json([
                 'message' => $meal->name . ' already exists'
             ], 400);
+        }
+
+        if($img_null == 1)
+        {
+            if ($meal->save()) {
+                return response()->json([
+                    'message' => $meal->name . ' created',
+                    'photo_path' => asset('img/' . $meal->photo_path),
+                ], 200);
+            } else {
+                return response()->json([
+                    'message' => $meal->name . ' not created'
+                ], 400);
+            }
         }
 
         if ($meal->save()) {
@@ -145,15 +150,15 @@ class MealController extends Controller
             $tmp = $meal->meals_eaten()->get(); // get the meals eaten based on the meal id
             $eaten_at_date = array_merge($eaten_at_date, $tmp->where('date_of_eat', $date)->all()); // get the meals eaten based on the date and time of the meal
         }
-    
-        foreach ($eaten_at_date as $id => $meal) { 
+
+        foreach ($eaten_at_date as $id => $meal) {
             $tmp = $meal->meals()->get(); // get the meals eaten based on the meal id
             $eaten_at_date[$id]['meal'] = $tmp->all(); // get the meals eaten based on the date
         }
-    
+
         return $eaten_at_date;
     }
-    
+
 
     /**
      * Show the form for editing the specified resource.
@@ -169,15 +174,27 @@ class MealController extends Controller
     public function update(Request $request, string $id)
     {
         $existing = Meal::findOrFail($id);
+        $name = $request->name;
+        $calories = $request->calories;
+        $proteins = $request->proteins;
+        $carbs = $request->carbs;
+        $fats = $request->fats;
+        $fibers = $request->fibers;
 
-        $name = $request->input('name');
-        $photo_path = $request->input('photo_path');
-        $calories = $request->input('calories');
-        $proteins = $request->input('proteins');
-        $carbs = $request->input('carbs');
-        $fats = $request->input('fats');
-        $fibers = $request->input('fibers');
+        if ($request->hasFile('photo')) {
+            $request->validate([
+                'photo' => 'image|mimes:png,jpg,jpeg|max:2048'
+            ]);
+            $photo_path = $request->file('photo')->getClientOriginalName();
+            $photo_path = time() . '_' . $photo_path; //new photo name based on time
+            $request->photo->move(public_path('img'), $photo_path); // move the photo to the public/img folder
 
+            //delete the old photo
+            $old_photo_path = $existing->photo_path;
+            if ($old_photo_path != null) {
+                unlink(public_path('img/' . $old_photo_path));
+            }
+        }
         // chceck if the numbers are not negative
         if ($calories < 0 || $proteins < 0 || $carbs < 0 || $fats < 0 || $fibers < 0) {
             return response()->json([
@@ -226,6 +243,14 @@ class MealController extends Controller
         }
 
         $meal = Meal::findOrFail($id);
+         //delete the old photo
+
+        if ($meal->photo_path != null && $meal->photo_path != 'img_placeholder.jpg') {
+            $old_photo_path = $meal->photo_path;
+            if ($old_photo_path != null) {
+                unlink(public_path('img/' . $old_photo_path));
+            }
+        }
         $meal_name = $meal->name;
         if ($meal->delete()) {
             return response()->json([

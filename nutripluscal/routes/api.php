@@ -79,11 +79,7 @@ Route::post('meals/eaten/delete/{id}',  [MealController::class, 'remove_meal_fro
 Route::post('meals/delete/{id}',  [MealController::class, 'remove_meal']);
 
 // Update meal in the meals
-<<<<<<< HEAD
-Route::post('update/created_meals/{id}',  [MealController::class, 'update']);
-=======
 Route::put('update/created_meals/{id}',  [MealController::class, 'update']);
 
 // Recommended meals
 Route::put('meals/recommended',  [MealController::class, 'recommended_meals']);
->>>>>>> 0a49a414192f1cdd2a3183405df22935e9a223e6

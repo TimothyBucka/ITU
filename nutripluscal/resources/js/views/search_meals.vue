@@ -58,8 +58,6 @@ export default {
       axios.get('/api/meals').then(response => {
         this.meals = response.data.data;
 
-        // filter the meals which are already selected based on the meal_arg
-        this.meals = this.meals.filter(meal => !selectedMealIds.includes(meal.id)); // test function for each meal in this.meals it checks if meal.id is not included in the selectedMealIds array
       });
     },
     // Function to filter meals based on the search query
@@ -88,7 +86,6 @@ export default {
       if (this.selected_meal) { // if there is a selected meal
         this.selected_meal.type_of_meal = type_of_meal;
         this.selected_meal.date = selected_date;
-        console.log(this.selected_meal);
         axios
           .post('/api/meals/eaten/', this.selected_meal)
           .then(response => {

@@ -4,7 +4,6 @@ Authors: Tobias Stec (xstect00)
 ###############################################################################################################  
 -->
 <template>
-    <!--TODO: v-if="isToday(selected_date) && Object.keys(meals).length!== 0"  DAT TO TAM DOLE TOBI VIE-->
     <button class="btn btn-secondary recommended" @click=funkcia>
         <p>Recommended meals for today</p>
     </button>
@@ -19,6 +18,13 @@ Authors: Tobias Stec (xstect00)
             <div v-else>
                 <p v-for="meal in recommended_meals">
                     {{ meal.name }}
+                <br>
+                <div class="name">
+                    {{ meal.restaurant_name }}
+                    <div v-if="meal.restaurant_name==null">
+                        From your meals
+                    </div>
+                </div>
                 </p>
             </div>
         </div>
@@ -166,6 +172,18 @@ Authors: Tobias Stec (xstect00)
     .body {
         text-align: left;
         padding: 2em;
+    }
+
+    .body p {
+        border: 1px solid lightgray;
+        padding: 0.5em;
+        border-radius: 0.5em;
+        margin: 0;
+    }
+
+    .name {
+        font-size: 0.8em;
+        color: gray;
     }
     
     .close:hover,

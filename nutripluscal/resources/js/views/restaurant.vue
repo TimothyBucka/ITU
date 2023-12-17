@@ -25,7 +25,7 @@ Authors: Timotej Bucka (xbucka00)
             <h2>Menu</h2>
 
             <template v-for="(item, index) in meals" :key="'meal-' + index">
-                <restaurantMeal :Data="item" :Index="index"/>
+                <mealTile :Data="item" :Index="index" />
             </template>
 
         </section>
@@ -39,7 +39,7 @@ Authors: Timotej Bucka (xbucka00)
 
 <script>
 import { getImageUrl } from "../helpers";
-import restaurantMeal from "./components/restaurantMeal.vue";
+import mealTile from "./components/mealTile.vue";
 
 export default {
     data() {
@@ -51,7 +51,7 @@ export default {
         }
     },
     components: {
-        restaurantMeal,
+        mealTile,
     },
     created() {
         this.retrieveData();

@@ -10,7 +10,7 @@
 .btn-primary {
     background-color: #556B2F !important;
     border: none !important;
-    padding: 0.5em 2em !important;
+    padding: 0.5em 2em;
     border-radius: 2px;
 }
 
@@ -37,6 +37,11 @@
 
 .form-select:focus {
     box-shadow: none !important;
+    border-color: darkolivegreen;
+}
+
+.form-control:focus {
+    box-shadow: 0 0 0 .1rem rgba(85, 107, 47, 0.25);
     border-color: darkolivegreen;
 }
 

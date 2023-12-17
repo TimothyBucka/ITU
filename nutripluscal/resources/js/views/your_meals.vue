@@ -7,25 +7,15 @@ Authors: Adam Pap (xpapad11)
     <h1 class="py-3">Your meals</h1>
 
     <div class="container">
-        <h4 class="py-3">Add your own meal</h4>
         <div class="buttons">
             <a class="btn btn-primary" href="#" @click="showModal(false)">Create Meal</a>
         </div>
 
-        <h4 class="py-3">Meals created by you</h4>
-        <ol class="list-group list-group-numbered">
-            <div v-for="(meal, index) in added_meals" :key="index">
-                <li class="list-group-item py-1 px-4 d-flex align-items-center created-meals-buttons">
-                    {{ meal.name }}
-                    <img class="img-thumbnail meal-image" :src="getImageUrl(meal.photo_path)" />
-
-                    <div class="buttons">
-                        <a class="btn btn-primary" href="#" @click="showEditModal(meal.id)">Edit</a>
-                        <a class="btn btn-primary" href="#" @click="deleteCreatedMeal(meal.id)">Delete</a>
-                    </div>
-                </li>
-            </div>
-        </ol>
+        <h4>Meals created by you</h4>
+        <div v-for="(meal, index) in added_meals" :key="index">
+            <mealTile :Data="meal" :Index="index" Type="your_meals" @deleteCreatedMeal="deleteCreatedMeal"
+                @showEditModal="showEditModal"></mealTile>
+        </div>
         <div v-if="this.pagination_last_page != null && this.pagination_last_page > 1">
             <button class="btn btn-primary" @click="previousPage">Previous</button>
             <button class="btn btn-primary" @click="nextPage">Next</button>
@@ -34,34 +24,51 @@ Authors: Adam Pap (xpapad11)
         <transition name="fade">
             <div v-if="showModal_var" class="modal">
                 <div class="modal-content">
-                    <span class="close" @click="closeModal">&times;</span>
-
-                    <p v-if="!this.is_editing_modal">Create a meal:</p>
-                    <p v-else>Edit a meal:</p>
+                    <div class="header">
+                        <p v-if="!this.is_editing_modal">Create a meal:</p>
+                        <p v-else>Edit a meal:</p>
+                        <span class="close" @click="closeModal">&times;</span>
+                    </div>
 
                     <div class="meal-params">
                         <div>
                             <div class="meal-modal-div">
-                                <label for="name">Name:</label>
-                                <input type="text" id="name" v-model="meal_params.name"><br>
-                                <label for="calories">Calories:</label>
-                                <input type="number" id="calories" v-model="meal_params.calories"><br>
-                                <label for="proteins">Proteins:</label>
-                                <input type="number" id="proteins" v-model="meal_params.proteins"><br>
-                                <label for="carbs">Carbs:</label>
-                                <input type="number" id="carbs" v-model="meal_params.carbs"><br>
-                                <label for="fat">Fat:</label>
-                                <input type="number" id="fat" v-model="meal_params.fats"><br>
-                                <label for="fibres">Fibres:</label>
-                                <input type="number" id="fibres" v-model="meal_params.fibers"><br>
-                                <label for="photo_path">Photo</label>
-                                <input type="file" id="photo_path" @change="handleFileUpload($event)"><br>
+                                <div class="change">
+                                    <label for="name">Name:</label>
+                                    <input type="text" id="name" v-model="meal_params.name" placeholder="Name"><br>
+                                </div>
+                                <div class="change">
+                                    <label for="calories">Calories: (kcal)</label>
+                                    <input type="number" id="calories" v-model="meal_params.calories" placeholder="Calories" ><br>
+                                </div>
+                                <div class="change">
+                                    <label for="proteins">Proteins: (grams)</label>
+                                    <input type="number" id="proteins" v-model="meal_params.proteins" placeholder="Proteins" ><br>
+                                </div>
+                                <div class="change">                         
+                                    <label for="carbs">Carbs: (grams)</label>
+                                    <input type="number" id="carbs" v-model="meal_params.carbs" placeholder="Carbs"><br>
+                                </div>
+                                <div class="change">
+                                    <label for="fat">Fats: (grams)</label>
+                                    <input type="number" id="fat" v-model="meal_params.fats" placeholder="Fats"><br>
+                                </div>
+                                <div class="change">
+                                    <label for="fibres">Fibres: (grams)</label>
+                                    <input type="number" id="fibres" v-model="meal_params.fibers" placeholder="Fibers"><br>
+                                </div>
+                                <div class="change">
+                                    <label for="photo_path">Photo</label>
+                                    <input type="file" id="photo_path" @change="handleFileUpload($event)" placeholder="Photo URL"><br>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <button class="btn btn-primary" v-if="!this.is_editing_modal" @click="modalCreateMeal">Add</button>
-                    <button class="btn btn-primary" v-else @click="modalUpdateMeal">Edit</button>
+                    <div class="buttons">
+                        <button class="btn btn-primary" v-if="!this.is_editing_modal" @click="modalCreateMeal">Add</button>
+                        <button class="btn btn-primary" v-else @click="modalUpdateMeal">Edit</button>
+                    </div>
 
                 </div>
             </div>
@@ -72,6 +79,7 @@ Authors: Adam Pap (xpapad11)
 
 <script>
 import axios from 'axios';
+import mealTile from "./components/mealTile.vue";
 
 export default {
     data() {
@@ -98,9 +106,12 @@ export default {
         this.showCreatedMeals();
     },
 
+    components: {
+        mealTile
+    },
+
     methods: {
         handleFileUpload(event) { // handle the file upload for the meal
-            console.log(event.target.files[0]);
             this.meal_params.photo_path = event.target.files[0];
         },
 
@@ -122,11 +133,6 @@ export default {
                 .catch(error => {
                     console.log(error);
                 });
-        },
-
-        getImageUrl(image) { // get the image url for the meal
-            const imageUrl = new URL('/public/img/' + image, import.meta.url);
-            return imageUrl;
         },
 
         closeModal() {
@@ -161,14 +167,14 @@ export default {
 
             if (has_negative) {
                 this.$toast.error('Digit parameters must be positive numbers', {
-                    position: 'top-right',
+                    position: 'bottom-right',
                     timeout: 2000,
                     closeOnClick: true,
                     pauseOnHover: true,
                 });
                 return;
             }
-            
+
             formData.append('photo', this.meal_params.photo_path); // Append the photo to the formData instance
 
             // Append the other parameters to the formData instance
@@ -184,7 +190,7 @@ export default {
                     this.showCreatedMeals(); // refresh the page when the meal is added
 
                     this.$toast.success(response.data.message, { // notification
-                        position: 'top-right',
+                        position: 'bottom-right',
                         duration: 2500,
                         closeOnClick: true,
                         pauseOnHover: true,
@@ -194,7 +200,7 @@ export default {
                 .catch(error => {
                     console.log(error);
                     this.$toast.error(error.response.data.message, {
-                        position: 'top-right',
+                        position: 'bottom-right',
                         timeout: 2000,
                         closeOnClick: true,
                         pauseOnHover: true,
@@ -217,7 +223,7 @@ export default {
                     this.showCreatedMeals(); // refresh the page when the meal is updated
 
                     this.$toast.success(response.data.message, { // notification
-                        position: 'top-right',
+                        position: 'bottom-right',
                         duration: 2500,
                         closeOnClick: true,
                         pauseOnHover: true,
@@ -227,7 +233,7 @@ export default {
                 .catch(error => {
                     console.log(error);
                     this.$toast.error(error.response.data.message, {
-                        position: 'top-right',
+                        position: 'bottom-right',
                         timeout: 2000,
                         closeOnClick: true,
                         pauseOnHover: true,
@@ -242,7 +248,7 @@ export default {
                     this.showCreatedMeals(this.selected_date); // refresh it after added to show the new data
 
                     this.$toast.success(response.data.message, { // notification
-                        position: 'top-right',
+                        position: 'bottom-right',
                         duration: 2500,
                         closeOnClick: true,
                         pauseOnHover: true,
@@ -251,7 +257,7 @@ export default {
                 .catch(error => {
                     console.log(error);
                     this.$toast.error(error.response.data.message, {
-                        position: 'top-right',
+                        position: 'bottom-right',
                         timeout: 2000,
                         closeOnClick: true,
                         pauseOnHover: true,
@@ -292,6 +298,7 @@ export default {
 .container {
     max-width: 90%;
     margin: auto;
+    margin-bottom: 1rem;
 }
 
 .buttons {
@@ -348,27 +355,42 @@ export default {
     margin: auto;
     padding: 20px;
     border: 1px solid #888;
-    width: 50%;
+    max-width: 90%;
+    min-width: 50%;
+}
+
+.modal-content p {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0;
 }
 
 .meal-params {
-    max-height: 300px;
+    max-height: auto;
+    min-height: 60%;
     overflow-y: auto;
 }
 
 .meal-modal-div {
-    border: 1px solid black;
-    padding: 10px;
-    margin: 10px;
+    min-width: 100%;
     cursor: pointer;
     flex: 1;
 }
 
+.header {
+    min-width: 95%;
+    display: flex;
+    justify-content: space-between;
+}
+
 .close {
     color: #aaaaaa;
-    float: right;
-    font-size: 28px;
+    font-size: 3em;
     font-weight: bold;
+    position: relative;
+    top: -30px;
+    right: -5px;
+    cursor: pointer;
 }
 
 .close:hover,
@@ -378,8 +400,38 @@ export default {
     cursor: pointer;
 }
 
+.change {
+    display: grid;
+    align-items: center;
+    margin: 10px;
+}
+
+.change label {
+    font-size: 1.25em;
+}
+
 .fade-enter,
 .fade-leave-to {
     opacity: 0;
+}
+
+.buttons {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.buttons button {
+    min-width: 12em;
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .buttons {
+        justify-content: center;
+    }
+
+    .change label {
+        font-size: 1em;
+    }
 }
 </style>

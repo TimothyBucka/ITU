@@ -17,7 +17,7 @@ const routes = [
     {
         path: "/",
         component: calendar,
-        name: "home",
+        name: "index",
     },
     {
         path: "/account",

@@ -1,5 +1,7 @@
 <?php
-
+// ######################################### FILE: restaurants.vue ###############################################
+// Authors: Timotej Bucka (xbucka00)
+// ############################################################################################################### 
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;

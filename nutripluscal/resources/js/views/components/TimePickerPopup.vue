@@ -1,3 +1,8 @@
+<!-- 
+######################################### FILE: TimePickerPopup.vue ###############################################
+Authors: Tobias Stec (xstect00)
+###############################################################################################################  
+-->
 <template>
     <div class="time-picker-popup">
       <div class="viewport" @wheel.prevent="handleScroll">

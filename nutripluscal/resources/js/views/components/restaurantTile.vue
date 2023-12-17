@@ -1,3 +1,8 @@
+<!-- 
+######################################### FILE: restaurantTile.vue ###############################################
+Authors: Timotej Bucka (xbucka00)
+###############################################################################################################  
+-->
 <template>
     <div class="tile">
         <div class="rest-cover" v-bind:style="{ backgroundImage: 'url(' + getImageUrl(Data.photo_url) + ')' }"></div>

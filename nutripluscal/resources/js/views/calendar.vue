@@ -1,3 +1,11 @@
+<!--
+######################################### FILE: calendar.vue ###############################################
+Authors: Adam Pap       (xpapad11)
+         Tobias Stec    (xstect00)
+############################################################################################################
+-->
+
+
 <template>
     <h1 class="py-3">Calendar</h1>
 
@@ -29,7 +37,7 @@
                 </div>
 
                 <div class="calories_accepted">
-                    <p>{{ totalCalories(meal) }}/{{ daily_intake }} kcal</p> <!-- TODO rework this to backend -->
+                    <p>{{ totalCalories(meal) }}/{{ daily_intake }} kcal</p>
                 </div>
 
                 <div class="percents">
@@ -423,6 +431,7 @@ export default {
         },
 
         retrieveMeals(date) {
+            console.log('retrieving meals');
             this.meals = {};
             const url = '/api/meals/date/' + date;
             return axios.get(url).then(response => {
@@ -451,7 +460,7 @@ export default {
                 this.retrieveMeals(this.selected_date).then(() => {
                     this.can_navigate = true;
                 });
-            }, 1);
+            }, 500);
 
         },
 
@@ -470,15 +479,12 @@ export default {
                 this.retrieveMeals(this.selected_date).then(() => {
                     this.can_navigate = true;
                 });
-            }, 1);
+            }, 500);
 
         },
 
     },
 }
-//TODO
-// zobrazenie podla skupin, ranajky, obed vecera, pricom kazda z tychto skupin ma vlastny add -- DONE
-// a vyber porcie --- DONE
 </script>
 
 <style scoped>

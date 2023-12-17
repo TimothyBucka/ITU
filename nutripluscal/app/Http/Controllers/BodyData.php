@@ -1,4 +1,8 @@
 <?php
+// ######################################### FILE: restaurants.vue ###############################################
+// Authors: Adam Pap        (xpapad11)
+//          Timotej Bucka   (xbucka00)
+// ############################################################################################################### 
 
 namespace App\Http\Controllers;
 
@@ -37,7 +41,7 @@ class BodyData extends Controller
         $current_date = new DateTime(); // get the date (today)
         $start_date = clone $current_date;
         $end_date = clone $current_date;
-        $end_date->modify('-10 day'); // +1 year from current day
+        $end_date->modify('-30 day'); 
     
         $dates = [];
         $currentDate = $start_date;

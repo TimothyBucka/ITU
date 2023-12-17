@@ -1,3 +1,8 @@
+<!-- 
+######################################### FILE: recommendedMeals.vue ###############################################
+Authors: Tobias Stec (xstect00)
+###############################################################################################################  
+-->
 <template>
     <!--TODO: v-if="isToday(selected_date) && Object.keys(meals).length!== 0"  DAT TO TAM DOLE TOBI VIE-->
     <button class="btn btn-secondary recommended" @click=funkcia>

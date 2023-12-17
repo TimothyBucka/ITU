@@ -1,3 +1,8 @@
+<!-- 
+######################################### FILE: infoPopup.vue ###############################################
+Authors: Tobias Stec (xstect00)
+###############################################################################################################  
+-->
 <template>
     <button class="btn foodbtn" @click="showPopup = !showPopup">
         <font-awesome-icon icon="info-circle" />

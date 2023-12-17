@@ -1,3 +1,8 @@
+<!-- 
+######################################### FILE: your_meals.vue ###############################################
+Authors: Adam Pap (xpapad11)
+############################################################################################################## 
+-->
 <template>
     <h1 class="py-3">Your meals</h1>
 
@@ -231,13 +236,6 @@ export default {
         },
 
         deleteCreatedMeal(meal_id) {
-            // let formData = new FormData();
-
-            // // Append the other parameters to the formData instance
-            // for (let key in this.meal_params) {
-            //     formData.append(key, this.meal_params[key]);
-            // }
-
             axios
                 .post('/api/meals/delete/' + meal_id)
                 .then(response => {
@@ -288,8 +286,6 @@ export default {
         }
     }
 }
-// kontrolsa pri edite aj na zaklade ostatnych paramterov ci je to validne --- DONE
-// obrazky pre jedla, jak pri create, dat moznost pridania obrazkov tak aj ich zobrazenie v ol liste --- DONE
 </script>
 
 <style scoped>

@@ -1,3 +1,8 @@
+<!-- 
+######################################### FILE: restaurantMeal.vue ###############################################
+Authors: Timotej Bucka (xbucka00)
+###############################################################################################################  
+-->
 <template>
     <div class="meal">
         <img :src="getImageUrl(Data.photo_path)" alt="meal image" width="100px"

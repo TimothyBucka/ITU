@@ -46,6 +46,12 @@ Route::get('/generate_dates',  [BodyData::class, 'generate_dates']);
 // List all of the restaurants
 Route::get('restaurants', [RestaurantController::class, 'index']);
 
+// List last visited restaurants
+Route::get('restaurants/last_visited', [RestaurantController::class, 'get_last_visited']);
+
+// List most visited restaurants
+Route::get('restaurants/most_visited', [RestaurantController::class, 'get_most_visited']);
+
 // List single body data
 Route::get('restaurants/{id}',  [RestaurantController::class, 'show']);
 

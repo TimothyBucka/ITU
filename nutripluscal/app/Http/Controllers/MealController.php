@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Meal;
+use App\Models\Restaurants;
 use App\Models\Meals_eaten;
 use Illuminate\Http\Request;
 use App\Http\Resources\Meal_data as Meal_data_resource;
@@ -96,15 +97,26 @@ class MealController extends Controller
         $meal_eaten->meal_time = $request->time_of_meal;
 
         // get the name of the meal
-        $meal_name = Meal::findOrFail($request->id)->name;
+        $meal = Meal::findOrFail($request->id);
+
+        // update restaurant visits
+        if ($meal->restaurant_id != null) {
+            $restaurant = Restaurants::findOrFail($meal->restaurant_id);
+            $restaurant_last_visited = $restaurant->last_visited;
+            if ($restaurant_last_visited == null || $restaurant_last_visited < $meal_eaten->date_of_eat) {
+                $restaurant->last_visited = $meal_eaten->date_of_eat;
+            }
+            $restaurant->visited = $restaurant->visited + 1;
+            $restaurant->save();
+        }
 
         if ($meal_eaten->save()) {
             return response()->json([
-                'message' => $meal_name . ' added'
+                'message' => $meal->name . ' added'
             ], 200);
         } else {
             return response()->json([
-                'message' => $meal_name . ' not added'
+                'message' => $meal->name . ' not added'
             ], 400);
         }
     }

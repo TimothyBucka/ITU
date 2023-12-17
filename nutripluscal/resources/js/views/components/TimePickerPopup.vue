@@ -1,3 +1,8 @@
+<!-- 
+######################################### FILE: TimePickerPopup.vue ###############################################
+Authors: Tobias Stec (xstect00)
+###############################################################################################################  
+-->
 <!-- Asi nevyuzijeme, ale mozno sa bude hodit v buducnosti -->
 <template>
     <div class="time-picker-popup">

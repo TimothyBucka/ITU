@@ -1,3 +1,8 @@
+<!-- 
+######################################### FILE: app.vue ###############################################
+Authors: Adam Pap (xpapad11)
+#######################################################################################################
+-->
 <template>
     <OnClickOutside @trigger="closeNav">
         <nav class="navbar navbar-expand-md bg-body-tertiary" data-bs-theme="dark">

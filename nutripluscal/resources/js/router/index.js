@@ -1,3 +1,8 @@
+// ######################################### FILE: index.js ###############################################
+// Authors: Adam Pap        (xpapad11)
+//          Timotej Bucka   (xbucka00)
+// ############################################################################################################ 
+
 import { createRouter, createWebHistory } from "vue-router";
 
 import restaurants from "../views/restaurants.vue";
@@ -8,11 +13,6 @@ import account from "../views/account.vue";
 import search_meals from "../views/search_meals.vue";
 
 const routes = [
-    {
-        path: "/",
-        component: calendar,
-        name: "home",
-    },
     {
         path: "/account",
         component: account,

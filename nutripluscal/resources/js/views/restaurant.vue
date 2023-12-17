@@ -1,3 +1,9 @@
+<!-- 
+######################################### FILE: restaurant.vue ###############################################
+Authors: Timotej Bucka (xbucka00)
+############################################################################################################### 
+-->
+
 <template>
     <template v-if="this.data.name">
         <img class="rest_img" :src="getImageUrl(this.data.photo_url)" alt="Restaurant image">
@@ -19,7 +25,7 @@
             <h2>Menu</h2>
 
             <template v-for="(item, index) in meals" :key="'meal-' + index">
-                <restaurantMeal :Data="item" :Index="index"/>
+                <mealTile :Data="item" :Index="index" />
             </template>
 
         </section>
@@ -33,7 +39,7 @@
 
 <script>
 import { getImageUrl } from "../helpers";
-import restaurantMeal from "./components/restaurantMeal.vue";
+import mealTile from "./components/mealTile.vue";
 
 export default {
     data() {
@@ -45,7 +51,7 @@ export default {
         }
     },
     components: {
-        restaurantMeal,
+        mealTile,
     },
     created() {
         this.retrieveData();

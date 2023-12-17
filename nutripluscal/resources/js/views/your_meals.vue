@@ -1,3 +1,8 @@
+<!-- 
+######################################### FILE: your_meals.vue ###############################################
+Authors: Adam Pap (xpapad11)
+############################################################################################################## 
+-->
 <template>
     <h1 class="py-3">Your meals</h1>
 
@@ -8,19 +13,9 @@
         </div>
 
         <h4 class="py-3">Meals created by you</h4>
-        <ol class="list-group list-group-numbered">
-            <div v-for="(meal, index) in added_meals" :key="index">
-                <li class="list-group-item py-1 px-4 d-flex align-items-center created-meals-buttons">
-                    {{ meal.name }}
-                    <img class="img-thumbnail meal-image" :src="getImageUrl(meal.photo_path)" />
-
-                    <div class="buttons">
-                        <a class="btn btn-primary" href="#" @click="showEditModal(meal.id)">Edit</a>
-                        <a class="btn btn-primary" href="#" @click="deleteCreatedMeal(meal.id)">Delete</a>
-                    </div>
-                </li>
-            </div>
-        </ol>
+        <div v-for="(meal, index) in added_meals" :key="index">
+            <mealTile :Data="meal" :Index="index" Type="your_meals" @deleteCreatedMeal="deleteCreatedMeal" @showEditModal="showEditModal"></mealTile>
+        </div>
         <div v-if="this.pagination_last_page != null && this.pagination_last_page > 1">
             <button class="btn btn-primary" @click="previousPage">Previous</button>
             <button class="btn btn-primary" @click="nextPage">Next</button>
@@ -67,6 +62,7 @@
 
 <script>
 import axios from 'axios';
+import mealTile from "./components/mealTile.vue";
 
 export default {
     data() {
@@ -93,6 +89,10 @@ export default {
         this.showCreatedMeals();
     },
 
+    components: {
+        mealTile
+    },
+
     methods: {
         handleFileUpload(event) { // handle the file upload for the meal
             console.log(event.target.files[0]);
@@ -117,11 +117,6 @@ export default {
                 .catch(error => {
                     console.log(error);
                 });
-        },
-
-        getImageUrl(image) { // get the image url for the meal
-            const imageUrl = new URL('/public/img/' + image, import.meta.url);
-            return imageUrl;
         },
 
         closeModal() {
@@ -231,13 +226,6 @@ export default {
         },
 
         deleteCreatedMeal(meal_id) {
-            // let formData = new FormData();
-
-            // // Append the other parameters to the formData instance
-            // for (let key in this.meal_params) {
-            //     formData.append(key, this.meal_params[key]);
-            // }
-
             axios
                 .post('/api/meals/delete/' + meal_id)
                 .then(response => {
@@ -288,8 +276,6 @@ export default {
         }
     }
 }
-// kontrolsa pri edite aj na zaklade ostatnych paramterov ci je to validne --- DONE
-// obrazky pre jedla, jak pri create, dat moznost pridania obrazkov tak aj ich zobrazenie v ol liste --- DONE
 </script>
 
 <style scoped>

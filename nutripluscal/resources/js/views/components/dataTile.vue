@@ -1,3 +1,8 @@
+<!-- 
+######################################### FILE: dataTile.vue ###############################################
+Authors: Timotej Bucka (xbucka00)
+###############################################################################################################  
+-->
 <template>
     <OnClickOutside @trigger="clickedOut">
         <div class="tile p-2 m-2" @mouseenter="showEditButton" @mouseleave="hideEditButton" @mousedown="tileClicked">

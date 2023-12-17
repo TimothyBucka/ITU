@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Meal;
+use App\Models\Restaurants;
 use App\Models\Meals_eaten;
 use Illuminate\Http\Request;
 use App\Http\Resources\Meal_data as Meal_data_resource;
@@ -101,15 +102,26 @@ class MealController extends Controller
         $meal_eaten->meal_time = $request->time_of_meal;
 
         // get the name of the meal
-        $meal_name = Meal::findOrFail($request->id)->name;
+        $meal = Meal::findOrFail($request->id);
+
+        // update restaurant visits
+        if ($meal->restaurant_id != null) {
+            $restaurant = Restaurants::findOrFail($meal->restaurant_id);
+            $restaurant_last_visited = $restaurant->last_visited;
+            if ($restaurant_last_visited == null || $restaurant_last_visited < $meal_eaten->date_of_eat) {
+                $restaurant->last_visited = $meal_eaten->date_of_eat;
+            }
+            $restaurant->visited = $restaurant->visited + 1;
+            $restaurant->save();
+        }
 
         if ($meal_eaten->save()) {
             return response()->json([
-                'message' => $meal_name . ' added'
+                'message' => $meal->name . ' added'
             ], 200);
         } else {
             return response()->json([
-                'message' => $meal_name . ' not added'
+                'message' => $meal->name . ' not added'
             ], 400);
         }
     }
@@ -268,5 +280,64 @@ class MealController extends Controller
                 'message' => $meal_name . ' not deleted'
             ], 400);
         }
+    }
+
+    public function recommended_meals(Request $request)
+    {
+        $calories = $request->input('calories');
+        $proteins = $request->input('proteins');
+        $carbs = $request->input('carbs');
+        $fats = $request->input('fats');
+        $fibers = $request->input('fibers');
+        $wantedCalories = $request->input('wantedCalories');
+        $wantedProteins = $request->input('wantedProteins');
+        $wantedCarbs = $request->input('wantedCarbs');
+        $wantedFats = $request->input('wantedFats');
+        $wantedFibers = $request->input('wantedFibers');
+        $numberOfMeals = $request->input('numberOfMeals');
+        // get all meals
+        $meals = Meal::all();
+        $recommended_meals = [];
+        $maxMeals=4;
+
+        $proteinGoal = $wantedProteins-$proteins;
+        $carbsGoal = $wantedCarbs-$carbs;
+        $fatsGoal = $wantedFats-$fats;
+        $fibersGoal = $wantedFibers-$fibers;
+        $caloriesGoal = $wantedCalories-$calories;
+        $mealGoal = $maxMeals-$numberOfMeals;
+
+        $goodMeals = [];
+        $totalDifference = 0;
+
+        foreach ($meals as $meal) {
+            $goodMeals[] = $meal;
+        }
+        
+        if (count($goodMeals) < $mealGoal) {
+            $mealGoal = count($goodMeals);
+        }       
+
+        $mealAndDifference = [];
+
+        foreach ($goodMeals as $meal) {
+            $totalDifference = (abs($meal->calories - $caloriesGoal))/$mealGoal;
+            $totalDifference += (abs($meal->proteins - $proteinGoal))/$mealGoal;
+            $totalDifference += (abs($meal->carbs - $carbsGoal))/$mealGoal;
+            $totalDifference += (abs($meal->fats - $fatsGoal))/$mealGoal;
+            $totalDifference += (abs($meal->fibers - $fibersGoal))/$mealGoal;
+            $mealAndDifference[] = [$meal, $totalDifference];
+        }
+
+        usort($mealAndDifference, function($a, $b) {
+            return $a[1] <=> $b[1];
+        });
+
+
+        for ($i=0; $i < $mealGoal; $i++) { 
+            $recommended_meals[] = $mealAndDifference[$i][0];
+        }
+        
+        return $recommended_meals;
     }
 }

@@ -1,11 +1,14 @@
 <template>
     <div class="meal">
-        <img :src="Data.image ? getImageUrl(Data.image) : getImageUrl('img_placeholder.jpg')" alt="meal image" width="100px"
+        <img :src="getImageUrl(Data.photo_path)" alt="meal image" width="100px"
             height="100px">
         <div class="meal-info">
             <div class="heading">
                 <h5>{{ Index + 1 }}. {{ Data.name }}</h5>
                 <h5>{{ Data.calories }} kcal</h5>
+                <div class="infoShow">
+                    <infoPopup :meal="Data" :portion="1" />
+                </div>
             </div>
             <div class="add">
                 <input type="date" v-model="date">
@@ -22,7 +25,9 @@
 </template>
 
 <script>
+import axios from "axios";
 import { getImageUrl } from "../../helpers";
+import infoPopup from "./infoPopup.vue";
 
 export default {
     props: {
@@ -35,13 +40,16 @@ export default {
             required: true,
         },
     },
+    components: {
+        infoPopup,
+    },
     data() {
         return {
             portions: [0.5, 1, 1.5, 2, 2.5, 3],
             portion: 1,
             date: "",
             meal_time: "Breakfast",
-            meal_times: ["Breakfast", "Lunch", "Dinner", "Snack"],
+            meal_times: ["Breakfast", "Lunch", "Dinner", "Snacks"],
         }
     },
     created() {
@@ -52,13 +60,14 @@ export default {
     methods: {
         getImageUrl,
         storeMeal() {
-            const url = "api/meals/eaten"
+            const url = "/api/meals/eaten/"
             const data = {
-                portion: this.portion,
+                portion_size: this.portion,
                 date: this.date,
-                meal_time: this.meal_time,
                 id: this.Data.id,
+                time_of_meal: this.meal_time,
             }
+
             axios.post(url, data).then(response => {
                 this.$toast.success(response.data.message, {
                     position: 'bottom-right',
@@ -68,7 +77,7 @@ export default {
                 });
             })
             .catch(error => {
-                this.$toast.error(response.data.message, {
+                this.$toast.error(error.data.message, {
                     position: 'bottom-right',
                     timeout: 2000,
                     closeOnClick: true,
@@ -107,13 +116,23 @@ img {
 
 .heading {
     display: flex;
-    justify-content: space-between;
+    align-items: center;
     width: 100%;
     padding: 0.5rem;
+    padding-right: 0;
 }
 
 .heading h5 {
     margin: 0;
+}
+
+.heading h5:nth-child(1) {
+    flex: 1;
+}
+
+.heading svg {
+    margin-left: 0.5rem;
+    cursor: pointer;
 }
 
 .add {

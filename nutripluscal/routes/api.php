@@ -46,6 +46,12 @@ Route::get('/generate_dates',  [BodyData::class, 'generate_dates']);
 // List all of the restaurants
 Route::get('restaurants', [RestaurantController::class, 'index']);
 
+// List last visited restaurants
+Route::get('restaurants/last_visited', [RestaurantController::class, 'get_last_visited']);
+
+// List most visited restaurants
+Route::get('restaurants/most_visited', [RestaurantController::class, 'get_most_visited']);
+
 // List single body data
 Route::get('restaurants/{id}',  [RestaurantController::class, 'show']);
 
@@ -73,4 +79,11 @@ Route::post('meals/eaten/delete/{id}',  [MealController::class, 'remove_meal_fro
 Route::post('meals/delete/{id}',  [MealController::class, 'remove_meal']);
 
 // Update meal in the meals
+<<<<<<< HEAD
 Route::post('update/created_meals/{id}',  [MealController::class, 'update']);
+=======
+Route::put('update/created_meals/{id}',  [MealController::class, 'update']);
+
+// Recommended meals
+Route::put('meals/recommended',  [MealController::class, 'recommended_meals']);
+>>>>>>> 0a49a414192f1cdd2a3183405df22935e9a223e6

@@ -47,13 +47,19 @@ export default {
     data() {
         return {
             recently_visited: [],
+            most_visited: [],
         }
     },
 
     created() {
-        var url = '/api/restaurants/';
+        var url = '/api/restaurants/last_visited';
         axios.get(url).then(response => {
             this.recently_visited = response.data.data;
+        });
+        
+        url = '/api/restaurants/most_visited';
+        axios.get(url).then(response => {
+            this.most_visited = response.data.data;
         });
     },
 }

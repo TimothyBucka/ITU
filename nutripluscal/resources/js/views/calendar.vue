@@ -104,7 +104,7 @@
                                             <p>{{ item.meal[0].calories*item.portion_size }} kcal</p>
                                                                                         
                                             <div class="infoShow">
-                                                <infoPopup :meal="item.meal[0]" :portion="item.portion_size" @close="closeInfoPopup" />
+                                                <infoPopup :meal="item.meal[0]" :portion="item.portion_size"/>
                                             </div>
 
                                             <button class="btn foodbtn" href="#" @click="delete_meal(item.id)">
@@ -124,8 +124,10 @@
         <transition name="fade"> <!--MEAL MODAL -->
             <div v-if="show_modal" class="modal">
                 <div class="modal-content">
-                    <span class="close" @click="closeModal">&times;</span>
-                    <p>Select a meal:</p>
+                    <div class="header">
+                        <span class="close" @click="closeModal">&times;</span>
+                        <p>Select a meal:</p>
+                    </div>
                     <div class="meal-list">
                         <div v-for="(meal, index) in all_meals" :key="index" @click="selectMeal(meal)">
                             <div v-if="!isMealAlreadyAdded(meal, accordion)">
@@ -149,12 +151,28 @@
         </transition>
     </div>
 
+    <div v-if="isToday(selected_date) && Object.keys(meals).length!== 0" class="recommended">
+        <recommendedMeals
+            :calories="totalCalories(meals[selected_date])"
+            :proteins="totalNutritions(meals[selected_date]).proteins"
+            :fibers="totalNutritions(meals[selected_date]).fibers"
+            :fats="totalNutritions(meals[selected_date]).fats"
+            :carbs="totalNutritions(meals[selected_date]).carbs"
+            :numberOfMeals="meals[selected_date] ? meals[selected_date].length : 0"
+            :wantedCalories="daily_intake"
+            :wantedProteins="getPercentage(daily_intake).proteinsPercentage"
+            :wantedFibers="getPercentage(daily_intake).fibersPercentage"
+            :wantedFats="getPercentage(daily_intake).fatsPercentage"
+            :wantedCarbs="getPercentage(daily_intake).carbsPercentage"
+        />
+    </div>
 
 </template>
 
 <script>
 import { parse, format } from 'date-fns';
 import infoPopup from './components/infoPopup.vue';
+import recommendedMeals from './components/recommendedMeals.vue';
 
 export default {
     data() {
@@ -166,7 +184,7 @@ export default {
                 { id: 1, name: 'Breakfast' },
                 { id: 2, name: 'Lunch' },
                 { id: 3, name: 'Dinner' },
-                { id: 4, name: 'Snack' },
+                { id: 4, name: 'Snacks' },
             ], // to generate accordions 
             daily_intake: 0,
             meals: {},
@@ -182,7 +200,8 @@ export default {
     },
 
     components: {
-        infoPopup
+        infoPopup,
+        recommendedMeals
     },
 
     created() { // when the component is created
@@ -199,14 +218,6 @@ export default {
         // toggle(index) { // toggle the accordion to change the color behind the button
         //     this.isActive = this.isActive === index ? null : index;
         // },
-
-        showInfo() {
-        this.showInfoPopup = true;
-        },
-        // Close the info popup
-        closeInfoPopup() {
-        this.showInfoPopup = false;
-        },
 
         totalCalories(meal) {
             let total = 0;
@@ -386,7 +397,8 @@ export default {
                 this.dates = response.data.dates;
                 this.current_index = this.dates.length - 1; // set current index to the last index
                 this.formated_date = this.formatDate(this.dates[this.current_index]); // format the last date
-                this.retrieveMeals(this.formated_date); // retrieve the meals for the last date
+                this.retrieveMeals(this.formated_date); // retrieve the meals for the last date\
+                this.selected_date = this.formated_date;
             })
                 .catch(error => {
                     console.log(error);
@@ -397,6 +409,17 @@ export default {
             axios.get(url).then(response => {
                 this.daily_intake = response.data.data.daily_intake;
             });
+        },
+
+        isToday(date) {
+            const today = new Date();
+            const selectedDate = new Date(date);
+
+            return (
+                today.getFullYear() === selectedDate.getFullYear() &&
+                today.getMonth() === selectedDate.getMonth() &&
+                today.getDate() === selectedDate.getDate()
+            );
         },
 
         retrieveMeals(date) {
@@ -476,43 +499,35 @@ export default {
 .modal button {
     background-color: #556B2F;
     border: none;
-    border-radius: 2px;
+    border-radius: 0.15em;
     padding: 0.35em;
     color: #ffffff;
 }
 
 .modal-content {
-    background-color: #ffffff;
     margin: auto;
-    padding: 20px;
-    padding-top: 0;
-    border: 1px solid #888;
-    width: 80%;
 }
 
 .meal-list {
-    max-height: 300px;
     overflow-y: auto;
 }
 
 .meal-modal-div {
-    border: 1px solid black;
-    padding: 10px;
-    margin: 10px;
-    cursor: pointer;
-    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5em 0;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.meal-modal-div:active {
+    background-color: #eaeaec;
 }
 
 .close {
     color: #a30707;
-    float: right;
-    font-size: 40px;
+    font-size: 3em;
     font-weight: bold;
-    max-width: 45px;
-    max-height: 45px;
-    display: flex;
-    justify-content: center;
-    margin-bottom: 10px;
 }
 
 .close:hover,
@@ -668,6 +683,9 @@ export default {
     display: none;
   }
 }
+
+
+/*****************************************************/
 
 
 /* .add-meal-btn:not(.collapsed) {

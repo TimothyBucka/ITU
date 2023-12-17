@@ -36,6 +36,10 @@ Route::get('/account', function () {
     return view('welcome');
 });
 
+Route::get('/search_meals/{date}/{meal_type}', function () {
+    return view('welcome');
+});
+
 // Route::get('/recipes', [UserController::class, 'show'])->name('/recipes');
 // Route::get('/calendar', [UserController::class, 'show'])->name('/calendar');
 

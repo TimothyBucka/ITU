@@ -40,8 +40,7 @@
                                 <label for="fibres">Fibres:</label>
                                 <input type="number" id="fibres" v-model="meal_params.fibers"><br>
                                 <label for="photo_path">Photo</label>
-                                <input type="text" id="photo_path" v-model="meal_params.photo_path"><br>
-
+                                <input type="file" id="photo_path" @change="handleFileUpload($event)"><br>
                             </div>
                         </div>
                     </div>
@@ -58,7 +57,6 @@
 
 <script>
 import axios from 'axios';
-import { getImageUrl } from "../helpers";
 import mealTile from "./components/mealTile.vue";
 
 export default {
@@ -91,6 +89,11 @@ export default {
     },
 
     methods: {
+        handleFileUpload(event) { // handle the file upload for the meal
+            console.log(event.target.files[0]);
+            this.meal_params.photo_path = event.target.files[0];
+        },
+
         showModal(editing) { // show the modal for creating meals
             this.showModal_var = true;
             this.is_editing_modal = editing;
@@ -127,7 +130,8 @@ export default {
         },
 
         modalCreateMeal() { // create a meal from the modal
-            let has_negative = false; // flag to check if there are any negative numbers TODO NOT SURE IF THIS CAN BE HERE OR RATHER AT BACKEND
+            let has_negative = false; // flag to check if there are any negative numbers
+            let formData = new FormData(); // beacuse of the image upload and the post sends only JSON 
 
             // check if all digit params are positive numbers
             for (let key in this.meal_params) {
@@ -149,14 +153,18 @@ export default {
                 });
                 return;
             }
+            
+            formData.append('photo', this.meal_params.photo_path); // Append the photo to the formData instance
 
-            // when the photo_path is empty, set it to the default image
-            if (this.meal_params.photo_path == '') {
-                this.meal_params.photo_path = 'img_placeholder.jpg';
+            // Append the other parameters to the formData instance
+            for (let key in this.meal_params) {
+                if (key != 'photo_path') {
+                    formData.append(key, this.meal_params[key]);
+                }
             }
 
             axios
-                .post('/api/create/meal/', this.meal_params)
+                .post('/api/create/meal/', formData)
                 .then(response => {
                     this.showCreatedMeals(); // refresh the page when the meal is added
 
@@ -179,9 +187,17 @@ export default {
                 });
         },
 
-        modalUpdateMeal() { // function for editing the meals from the modal
-            axios.
-                put('/api/update/created_meals/' + this.meal_id_for_editing, this.meal_params)
+        modalUpdateMeal() {
+            let formData = new FormData();
+            formData.append('photo', this.meal_params.photo_path); // Append the photo to the formData instance
+
+            // Append the other parameters to the formData instance
+            for (let key in this.meal_params) {
+                formData.append(key, this.meal_params[key]); // add also the photo path to delete the old image
+            }
+
+            axios
+                .post('/api/update/created_meals/' + this.meal_id_for_editing, formData)
                 .then(response => {
                     this.showCreatedMeals(); // refresh the page when the meal is updated
 
@@ -205,6 +221,13 @@ export default {
         },
 
         deleteCreatedMeal(meal_id) {
+            // let formData = new FormData();
+
+            // // Append the other parameters to the formData instance
+            // for (let key in this.meal_params) {
+            //     formData.append(key, this.meal_params[key]);
+            // }
+
             axios
                 .post('/api/meals/delete/' + meal_id)
                 .then(response => {
@@ -258,8 +281,6 @@ export default {
 // kontrolsa pri edite aj na zaklade ostatnych paramterov ci je to validne --- DONE
 // obrazky pre jedla, jak pri create, dat moznost pridania obrazkov tak aj ich zobrazenie v ol liste --- DONE
 </script>
-
-
 
 <style scoped>
 .container {

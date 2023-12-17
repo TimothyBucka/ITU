@@ -101,6 +101,18 @@
 </script>
   
 <style scoped>
+
+    button.recommended {
+        display: flex;
+        margin: 0.75em auto;
+        font-size: 1em;
+    }
+
+    button p {
+        margin: 0.25em;
+        padding-bottom: 0.15em;
+    }
+
     .info-popup {
         display: flex;
         position: fixed;

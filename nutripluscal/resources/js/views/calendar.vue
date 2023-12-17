@@ -114,7 +114,6 @@
                                         </div>
                                     </div>
                                     <p>Portion: {{ item.portion_size }} </p>
-                                    <!-- TODO  portion robi adam -->
                                 </div>
                             </div>
                         </div>
@@ -126,8 +125,10 @@
         <transition name="fade"> <!--MEAL MODAL -->
             <div v-if="show_modal" class="modal">
                 <div class="modal-content">
-                    <span class="close" @click="closeModal">&times;</span>
-                    <p>Select a meal:</p>
+                    <div class="header">
+                        <span class="close" @click="closeModal">&times;</span>
+                        <p>Select a meal:</p>
+                    </div>
                     <div class="meal-list">
                         <div v-for="(meal, index) in all_meals" :key="index" @click="selectMeal(meal)">
                             <div v-if="!isMealAlreadyAdded(meal, accordion)">
@@ -151,12 +152,27 @@
         </transition>
     </div>
 
+    <recommendedMeals
+        :calories="totalCalories(meals[selected_date])"
+        :proteins="totalNutritions(meals[selected_date]).proteins"
+        :fibers="totalNutritions(meals[selected_date]).fibers"
+        :fats="totalNutritions(meals[selected_date]).fats"
+        :carbs="totalNutritions(meals[selected_date]).carbs"
+        :numberOfMeals="meals[selected_date] ? meals[selected_date].length : 0"
+        :wantedCalories="daily_intake"
+        :wantedProteins="getPercentage(daily_intake).proteinsPercentage"
+        :wantedFibers="getPercentage(daily_intake).fibersPercentage"
+        :wantedFats="getPercentage(daily_intake).fatsPercentage"
+        :wantedCarbs="getPercentage(daily_intake).carbsPercentage"
+        @close="closeRecommendedPopup"
+    />
 
 </template>
 
 <script>
 import { parse, format } from 'date-fns';
 import infoPopup from './components/infoPopup.vue';
+import recommendedMeals from './components/recommendedMeals.vue';
 
 export default {
     data() {
@@ -184,7 +200,8 @@ export default {
     },
 
     components: {
-        infoPopup
+        infoPopup,
+        recommendedMeals
     },
 
     created() { // when the component is created
@@ -202,12 +219,13 @@ export default {
         //     this.isActive = this.isActive === index ? null : index;
         // },
 
-        showInfo() {
-        this.showInfoPopup = true;
-        },
         // Close the info popup
         closeInfoPopup() {
         this.showInfoPopup = false;
+        },
+
+        closeRecommendedPopup() {
+            this.showRecommendedPopup = false;
         },
 
         totalCalories(meal) {
@@ -401,6 +419,17 @@ export default {
             });
         },
 
+        isToday(date) {
+            const today = new Date();
+            const selectedDate = new Date(date);
+
+            return (
+                today.getFullYear() === selectedDate.getFullYear() &&
+                today.getMonth() === selectedDate.getMonth() &&
+                today.getDate() === selectedDate.getDate()
+            );
+        },
+
         retrieveMeals(date) {
             this.meals = {};
             const url = '/api/meals/date/' + date;
@@ -478,43 +507,35 @@ export default {
 .modal button {
     background-color: #556B2F;
     border: none;
-    border-radius: 2px;
+    border-radius: 0.15em;
     padding: 0.35em;
     color: #ffffff;
 }
 
 .modal-content {
-    background-color: #ffffff;
     margin: auto;
-    padding: 20px;
-    padding-top: 0;
-    border: 1px solid #888;
-    width: 80%;
 }
 
 .meal-list {
-    max-height: 300px;
     overflow-y: auto;
 }
 
 .meal-modal-div {
-    border: 1px solid black;
-    padding: 10px;
-    margin: 10px;
-    cursor: pointer;
-    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5em 0;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.meal-modal-div:active {
+    background-color: #eaeaec;
 }
 
 .close {
     color: #a30707;
-    float: right;
-    font-size: 40px;
+    font-size: 3em;
     font-weight: bold;
-    max-width: 45px;
-    max-height: 45px;
-    display: flex;
-    justify-content: center;
-    margin-bottom: 10px;
 }
 
 .close:hover,
@@ -670,6 +691,28 @@ export default {
     display: none;
   }
 }
+
+/*************** RECOMMEND PART *********************/
+
+button.recommended {
+    display: flex;
+    margin: 0.5em auto;
+    background-color: #7B7B7C !important;
+}
+
+.recommended {
+    max-width: 80%;
+    min-width: 75%;
+    border-radius: 0.25em;
+    color: white;
+    font-size: 1.2em;
+}
+
+.recommended p {
+    margin-bottom: 0.25em;
+}
+
+/*****************************************************/
 
 
 /* .add-meal-btn:not(.collapsed) {

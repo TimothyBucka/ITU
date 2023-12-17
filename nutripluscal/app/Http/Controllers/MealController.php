@@ -244,4 +244,63 @@ class MealController extends Controller
             ], 400);
         }
     }
+
+    public function recommended_meals(Request $request)
+    {
+        $calories = $request->input('calories');
+        $proteins = $request->input('proteins');
+        $carbs = $request->input('carbs');
+        $fats = $request->input('fats');
+        $fibers = $request->input('fibers');
+        $wantedCalories = $request->input('wantedCalories');
+        $wantedProteins = $request->input('wantedProteins');
+        $wantedCarbs = $request->input('wantedCarbs');
+        $wantedFats = $request->input('wantedFats');
+        $wantedFibers = $request->input('wantedFibers');
+        $numberOfMeals = $request->input('numberOfMeals');
+        // get all meals
+        $meals = Meal::all();
+        $recommended_meals = [];
+        $maxMeals=4;
+
+        $proteinGoal = $wantedProteins-$proteins;
+        $carbsGoal = $wantedCarbs-$carbs;
+        $fatsGoal = $wantedFats-$fats;
+        $fibersGoal = $wantedFibers-$fibers;
+        $caloriesGoal = $wantedCalories-$calories;
+        $mealGoal = $maxMeals-$numberOfMeals;
+
+        $goodMeals = [];
+        $totalDifference = 0;
+
+        foreach ($meals as $meal) {
+            $goodMeals[] = $meal;
+        }
+        
+        if (count($goodMeals) < $mealGoal) {
+            $mealGoal = count($goodMeals);
+        }       
+
+        $mealAndDifference = [];
+
+        foreach ($goodMeals as $meal) {
+            $totalDifference = (abs($meal->calories - $caloriesGoal))/$mealGoal;
+            $totalDifference += (abs($meal->proteins - $proteinGoal))/$mealGoal;
+            $totalDifference += (abs($meal->carbs - $carbsGoal))/$mealGoal;
+            $totalDifference += (abs($meal->fats - $fatsGoal))/$mealGoal;
+            $totalDifference += (abs($meal->fibers - $fibersGoal))/$mealGoal;
+            $mealAndDifference[] = [$meal, $totalDifference];
+        }
+
+        usort($mealAndDifference, function($a, $b) {
+            return $a[1] <=> $b[1];
+        });
+
+
+        for ($i=0; $i < $mealGoal; $i++) { 
+            $recommended_meals[] = $mealAndDifference[$i][0];
+        }
+        
+        return $recommended_meals;
+    }
 }

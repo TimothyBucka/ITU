@@ -4,4 +4,5 @@ Secondary Color: #647c58 (Laurel Green)
 Delete button color: #b60707bb
 
 Light Grey: #eaeaec
+Dark Grey: #7B7B7C
 

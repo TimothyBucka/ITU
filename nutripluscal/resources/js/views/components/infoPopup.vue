@@ -14,11 +14,11 @@ Authors: Tobias Stec (xstect00)
             <span class="close" @click="closePopup">&times;</span>
         </div>
         <div class="body">
-                <strong>Calories:</strong> {{ meal.calories*portion }}<br>
-                <strong>Proteins:</strong> {{ meal.proteins*portion }}<br>
-                <strong>Fibers:</strong> {{ meal.fibers*portion }}<br>
-                <strong>Fats:</strong> {{ meal.fats*portion }}<br>
-                <strong>Carbs:</strong> {{ meal.carbs*portion }}
+                <strong>Calories:</strong> {{ meal.calories*portion }} kcal<br>
+                <strong>Proteins:</strong> {{ meal.proteins*portion }}g<br>
+                <strong>Fibers:</strong> {{ meal.fibers*portion }}g<br>
+                <strong>Fats:</strong> {{ meal.fats*portion }}g<br>
+                <strong>Carbs:</strong> {{ meal.carbs*portion }}g
         </div>
       </div>
     </div>

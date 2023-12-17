@@ -73,6 +73,21 @@ class RestaurantController extends Controller
     }
 
     /**
+     * Search restaurants by query.
+     */
+    public function search(Request $request)
+    {
+        $query = $request->input('query');
+        $rest_data = Restaurants::where('name', 'like', '%' . $query . '%')
+                    ->orWhere('address', 'like', '%' . $query . '%')
+                    ->orWhere('type', 'like', '%' . $query . '%')
+                    ->orderBy('name') // Sort restaurants by name
+                    ->get();
+
+        return Restaurants_data_resource::collection($rest_data);
+    }
+
+    /**
      * Show the form for editing the specified resource.
      */
     public function edit(Restaurants $restaurants)

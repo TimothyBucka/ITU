@@ -1,7 +1,6 @@
 <template>
     <div class="meal">
-        <img :src="getImageUrl(Data.photo_path)" alt="meal image" width="100px"
-            height="100px">
+        <img :src="getImageUrl(Data.photo_path)" alt="meal image" width="100px" height="100px">
         <div class="meal-info">
             <div class="heading">
                 <h5>{{ Index + 1 }}. {{ Data.name }}</h5>
@@ -10,7 +9,7 @@
                     <infoPopup :meal="Data" :portion="1" />
                 </div>
             </div>
-            <div class="add">
+            <div v-if="Type === 'restaurant'" class="add">
                 <input type="date" v-model="date">
                 <select class="form-select form-select-sm" v-model="meal_time">
                     <option v-for="time in meal_times" :key="time" :value="time">{{ time }}</option>
@@ -19,6 +18,10 @@
                     <option v-for="n in portions" :key="n" :value="n">{{ n }}</option>
                 </select>
                 <button class="btn btn-sm btn-primary" @click="storeMeal()">Add</button>
+            </div>
+            <div v-else class="add">
+                <button class="btn btn-primary px-3 rounded me-1" @click="showEditModal()">Edit</button>
+                <button class="btn btn-danger px-2 rounded" @click="deleteCreatedMeal()">Delete</button>
             </div>
         </div>
     </div>
@@ -39,6 +42,10 @@ export default {
             type: Number,
             required: true,
         },
+        Type: {
+            type: String,
+            default: "restaurant"
+        }
     },
     components: {
         infoPopup,
@@ -76,14 +83,22 @@ export default {
                     pauseOnHover: true,
                 });
             })
-            .catch(error => {
-                this.$toast.error(error.data.message, {
-                    position: 'bottom-right',
-                    timeout: 2000,
-                    closeOnClick: true,
-                    pauseOnHover: true,
+                .catch(error => {
+                    this.$toast.error(error.data.message, {
+                        position: 'bottom-right',
+                        timeout: 2000,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                    });
                 });
-            });
+        },
+
+        showEditModal() {
+            this.$emit("showEditModal", this.Data.id);
+        },
+
+        deleteCreatedMeal() {
+            this.$emit("deleteCreatedMeal", this.Data.id);
         }
     },
 };
@@ -144,13 +159,11 @@ img {
 
 input[type="date"] {
     border: 0;
-    font-size: 1.5rem;
-    margin-right: 0.5rem;
 }
 
-input[type="date"]::-webkit-datetime-edit {
+/* input[type="date"]::-webkit-datetime-edit {
     display: none;
-}
+} */
 
 input[type="date"]:focus-visible {
     outline: none;

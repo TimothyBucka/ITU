@@ -55,6 +55,9 @@ Route::get('restaurants/most_visited', [RestaurantController::class, 'get_most_v
 // List single body data
 Route::get('restaurants/{id}',  [RestaurantController::class, 'show']);
 
+// search restaurants
+Route::post('restaurants/search', [RestaurantController::class, 'search']);
+
 //-------------------MEAL-------------------//
 
 // List all of the meals

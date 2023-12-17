@@ -8,11 +8,19 @@ import { OnClickOutside } from '@vueuse/components';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { faUtensils, faPhone, faLocationDot, faPlus, faInfoCircle, faRemove } from '@fortawesome/free-solid-svg-icons';
+import {
+    faUtensils,
+    faPhone,
+    faLocationDot,
+    faPlus,
+    faInfoCircle,
+    faRemove,
+    faMagnifyingGlass
+} from '@fortawesome/free-solid-svg-icons';
 
 const app = createApp({});
 
-library.add(faUtensils, faPhone, faLocationDot, faPlus, faInfoCircle, faRemove);
+library.add(faUtensils, faPhone, faLocationDot, faPlus, faInfoCircle, faRemove, faMagnifyingGlass);
 
 // global components
 app.component("app-component", App);

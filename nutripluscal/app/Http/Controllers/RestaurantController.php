@@ -18,6 +18,32 @@ class RestaurantController extends Controller
         return Restaurants_data_resource::collection($rest_data);
     }
 
+    public function get_last_visited()
+    {
+        // get 5 last visited restaurants
+        $rest_data = Restaurants::orderBy('last_visited', 'desc');
+        if ($rest_data->count() > 5) {
+            $rest_data = $rest_data->take(5)->get();
+        } else {
+            $rest_data = $rest_data->get();
+        }
+
+        return Restaurants_data_resource::collection($rest_data);
+    }
+
+    public function get_most_visited()
+    {
+        // get 5 most visited restaurants
+        $rest_data = Restaurants::orderBy('visited', 'desc');
+        if ($rest_data->count() > 5) {
+            $rest_data = $rest_data->take(5)->get();
+        } else {
+            $rest_data = $rest_data->get();
+        }
+
+        return Restaurants_data_resource::collection($rest_data);
+    }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -39,7 +65,9 @@ class RestaurantController extends Controller
      */
     public function show(string $id)
     {
-        $rest_data = Restaurants::findOrFail($id);
+        $rest_data = Restaurants::with(['meals' => function ($q) {
+            $q->orderBy('name', 'asc');
+        }])->findOrFail($id);
 
         return new Restaurants_data_resource($rest_data);
     }

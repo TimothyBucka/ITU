@@ -36,7 +36,7 @@
                     <p>{{ ((daily_intake ? (totalCalories(meal) / daily_intake) : 0) * 100).toFixed(1) }}%</p>
                 </div>
 
-            </div><br>
+            </div>
             <div class="nutritions_stats">
 
                 <div class="proteins">
@@ -184,7 +184,7 @@ export default {
                 { id: 1, name: 'Breakfast' },
                 { id: 2, name: 'Lunch' },
                 { id: 3, name: 'Dinner' },
-                { id: 4, name: 'Snack' },
+                { id: 4, name: 'Snacks' },
             ], // to generate accordions 
             daily_intake: 0,
             meals: {},

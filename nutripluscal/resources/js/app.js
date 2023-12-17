@@ -1,17 +1,18 @@
 import './bootstrap';
+import router from './router';
 import { createApp } from 'vue';
-import router from './router'
 import App from './app.vue';
 import ToastPlugin from 'vue-toast-notification';
 import 'vue-toast-notification/dist/theme-bootstrap.css';
+import { OnClickOutside } from '@vueuse/components';
+
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faUtensils, faPlus, faInfoCircle, faRemove } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { OnClickOutside } from '@vueuse/components'; 
+import { faUtensils, faPhone, faLocationDot, faPlus, faInfoCircle, faRemove } from '@fortawesome/free-solid-svg-icons';
 
 const app = createApp({});
 
-library.add(faUtensils, faPlus, faInfoCircle, faRemove);
+library.add(faUtensils, faPhone, faLocationDot, faPlus, faInfoCircle, faRemove);
 
 // global components
 app.component("app-component", App);

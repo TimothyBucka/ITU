@@ -35,6 +35,11 @@
     border-radius: 2px;
 }
 
+.form-select:focus {
+    box-shadow: none !important;
+    border-color: darkolivegreen;
+}
+
 /***************************** NAVBAR ****************************/
 
 .navbar.bg-body-tertiary {

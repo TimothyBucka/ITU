@@ -104,7 +104,7 @@
                                             
                                             
                                             <div class="infoShow">
-                                                <infoPopup :meal="item.meal[0]" :portion="item.portion_size" @close="closeInfoPopup" />
+                                                <infoPopup :meal="item.meal[0]" :portion="item.portion_size"/>
                                             </div>
 
                                             
@@ -152,20 +152,21 @@
         </transition>
     </div>
 
-    <recommendedMeals
-        :calories="totalCalories(meals[selected_date])"
-        :proteins="totalNutritions(meals[selected_date]).proteins"
-        :fibers="totalNutritions(meals[selected_date]).fibers"
-        :fats="totalNutritions(meals[selected_date]).fats"
-        :carbs="totalNutritions(meals[selected_date]).carbs"
-        :numberOfMeals="meals[selected_date] ? meals[selected_date].length : 0"
-        :wantedCalories="daily_intake"
-        :wantedProteins="getPercentage(daily_intake).proteinsPercentage"
-        :wantedFibers="getPercentage(daily_intake).fibersPercentage"
-        :wantedFats="getPercentage(daily_intake).fatsPercentage"
-        :wantedCarbs="getPercentage(daily_intake).carbsPercentage"
-        @close="closeRecommendedPopup"
-    />
+    <div v-if="isToday(selected_date) && Object.keys(meals).length!== 0" class="recommended">
+        <recommendedMeals
+            :calories="totalCalories(meals[selected_date])"
+            :proteins="totalNutritions(meals[selected_date]).proteins"
+            :fibers="totalNutritions(meals[selected_date]).fibers"
+            :fats="totalNutritions(meals[selected_date]).fats"
+            :carbs="totalNutritions(meals[selected_date]).carbs"
+            :numberOfMeals="meals[selected_date] ? meals[selected_date].length : 0"
+            :wantedCalories="daily_intake"
+            :wantedProteins="getPercentage(daily_intake).proteinsPercentage"
+            :wantedFibers="getPercentage(daily_intake).fibersPercentage"
+            :wantedFats="getPercentage(daily_intake).fatsPercentage"
+            :wantedCarbs="getPercentage(daily_intake).carbsPercentage"
+        />
+    </div>
 
 </template>
 
@@ -218,15 +219,6 @@ export default {
         // toggle(index) { // toggle the accordion to change the color behind the button
         //     this.isActive = this.isActive === index ? null : index;
         // },
-
-        // Close the info popup
-        closeInfoPopup() {
-        this.showInfoPopup = false;
-        },
-
-        closeRecommendedPopup() {
-            this.showRecommendedPopup = false;
-        },
 
         totalCalories(meal) {
             let total = 0;
@@ -406,7 +398,8 @@ export default {
                 this.dates = response.data.dates;
                 this.current_index = this.dates.length - 1; // set current index to the last index
                 this.formated_date = this.formatDate(this.dates[this.current_index]); // format the last date
-                this.retrieveMeals(this.formated_date); // retrieve the meals for the last date
+                this.retrieveMeals(this.formated_date); // retrieve the meals for the last date\
+                this.selected_date = this.formated_date;
             })
                 .catch(error => {
                     console.log(error);
@@ -692,25 +685,6 @@ export default {
   }
 }
 
-/*************** RECOMMEND PART *********************/
-
-button.recommended {
-    display: flex;
-    margin: 0.5em auto;
-    background-color: #7B7B7C !important;
-}
-
-.recommended {
-    max-width: 80%;
-    min-width: 75%;
-    border-radius: 0.25em;
-    color: white;
-    font-size: 1.2em;
-}
-
-.recommended p {
-    margin-bottom: 0.25em;
-}
 
 /*****************************************************/
 

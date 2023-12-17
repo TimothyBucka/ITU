@@ -41,7 +41,7 @@ Authors: Timotej Bucka (xbucka00)
 
         <div class="wrapper">
             <div class="slider">
-                <template v-for="(item, index) in recently_visited" :key="'visited-' + index">
+                <template v-for="(item, index) in most_visited" :key="'visited-' + index">
                     <router-link :to="{ name: 'restaurants/id', params: { id: item.id } }"
                         style="text-decoration: none; color: inherit;">
                         <restaurantTile :Data="item" />

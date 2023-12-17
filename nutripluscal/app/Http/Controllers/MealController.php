@@ -102,7 +102,7 @@ class MealController extends Controller
         $meal_eaten->portion_size = $request->portion_size;
         $meal_eaten->date_of_eat = $request->date;
         $meal_eaten->meal_id = $request->id;
-        $meal_eaten->meal_time = $request->time_of_meal;
+        $meal_eaten->meal_time = $request->type_of_meal;
 
         // get the name of the meal
         $meal = Meal::findOrFail($request->id);

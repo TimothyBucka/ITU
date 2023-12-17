@@ -5,6 +5,7 @@
 
 import { createRouter, createWebHistory } from "vue-router";
 
+import home from "../views/home.vue";
 import restaurants from "../views/restaurants.vue";
 import restaurant from "../views/restaurant.vue";
 import your_meals from "../views/your_meals.vue";
@@ -13,6 +14,11 @@ import account from "../views/account.vue";
 import search_meals from "../views/search_meals.vue";
 
 const routes = [
+    {
+        path: "/",
+        component: calendar,
+        name: "home",
+    },
     {
         path: "/account",
         component: account,
@@ -34,9 +40,9 @@ const routes = [
         name: "your_meals",
     },
     {
-        path: "/search_meals/:date/:meal_type",
+        path: "/search_meals/:date/:meal_type/:meal_arg",
         component: search_meals,
-        name: "search_meals/date/meal_type",
+        name: "search_meals/date/meal_type/meal_arg",
     },
     {
         path: "/calendar",

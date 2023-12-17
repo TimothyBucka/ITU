@@ -5,7 +5,6 @@ Authors: Adam Pap       (xpapad11)
 ############################################################################################################
 -->
 
-
 <template>
     <h1 class="py-3">Calendar</h1>
 
@@ -84,7 +83,7 @@ Authors: Adam Pap       (xpapad11)
                     </div>
                 </div>
             </div>
-        </div>        
+        </div>
 
         <div class="accordion" id="accordion">
             <div class="accordion-item" v-for="(accordion, index) in accordions" :key="index">
@@ -92,10 +91,10 @@ Authors: Adam Pap       (xpapad11)
 
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                         :data-bs-target="'#collapse' + accordion.id" aria-expanded="false"
-                        :aria-controls="'collapse' + accordion.id"> <!--@click="toggle(index)"-->
+                        :aria-controls="'collapse' + accordion.id">
                         <p>{{ accordion.name }}</p>
                     </button>
-                    <button class="btn btn-primary add-meal-btn" @click="modalGetMeals(accordion.name)"
+                    <button class="btn btn-primary add-meal-btn" @click="modalGetMeals(accordion.name, meal)"
                         :class="{ 'collapsed': isActive !== index }">
                         <font-awesome-icon icon="plus" />
                     </button>
@@ -109,10 +108,10 @@ Authors: Adam Pap       (xpapad11)
                                     <div v-if="(item.meals != undefined || item.meal != null)">
                                         <p>{{ item.meal[0].name }}</p>
                                         <div class="foodButtons">
-                                            <p>{{ item.meal[0].calories*item.portion_size }} kcal</p>
-                                                                                        
+                                            <p>{{ item.meal[0].calories * item.portion_size }} kcal</p>
+
                                             <div class="infoShow">
-                                                <infoPopup :meal="item.meal[0]" :portion="item.portion_size"/>
+                                                <infoPopup :meal="item.meal[0]" :portion="item.portion_size" />
                                             </div>
 
                                             <button class="btn foodbtn" href="#" @click="delete_meal(item.id)">
@@ -141,10 +140,11 @@ Authors: Adam Pap       (xpapad11)
                             <div v-if="!isMealAlreadyAdded(meal, accordion)">
                                 <div class="meal-modal-div">
                                     <p>{{ meal.name }}</p>
-                                    <select class="form-select form-select-sm" aria-label="Small select example" v-model="meal.portion_size">
+                                    <select class="form-select form-select-sm" aria-label="Small select example"
+                                        v-model="meal.portion_size">
                                         <option selected value="1.0">1x</option>
                                         <option value="0.5">0.5x</option>
-                                        <option value="1.5">1.5x</option>        
+                                        <option value="1.5">1.5x</option>
                                         <option value="2.0">2x</option>
                                         <option value="2.5">2.5x</option>
                                         <option value="3.0">3x</option>
@@ -159,22 +159,17 @@ Authors: Adam Pap       (xpapad11)
         </transition>
     </div>
 
-    <div v-if="isToday(selected_date) && Object.keys(meals).length!== 0" class="recommended">
-        <recommendedMeals
-            :calories="totalCalories(meals[selected_date])"
+    <div v-if="isToday(selected_date) && Object.keys(meals).length !== 0" class="recommended">
+        <recommendedMeals :calories="totalCalories(meals[selected_date])"
             :proteins="totalNutritions(meals[selected_date]).proteins"
-            :fibers="totalNutritions(meals[selected_date]).fibers"
-            :fats="totalNutritions(meals[selected_date]).fats"
+            :fibers="totalNutritions(meals[selected_date]).fibers" :fats="totalNutritions(meals[selected_date]).fats"
             :carbs="totalNutritions(meals[selected_date]).carbs"
-            :numberOfMeals="meals[selected_date] ? meals[selected_date].length : 0"
-            :wantedCalories="daily_intake"
+            :numberOfMeals="meals[selected_date] ? meals[selected_date].length : 0" :wantedCalories="daily_intake"
             :wantedProteins="getPercentage(daily_intake).proteinsPercentage"
             :wantedFibers="getPercentage(daily_intake).fibersPercentage"
             :wantedFats="getPercentage(daily_intake).fatsPercentage"
-            :wantedCarbs="getPercentage(daily_intake).carbsPercentage"
-        />
+            :wantedCarbs="getPercentage(daily_intake).carbsPercentage" />
     </div>
-
 </template>
 
 <script>
@@ -201,8 +196,7 @@ export default {
             current_index: 0,
             calculatedPercentage: 0,
             can_navigate: true,
-            show_modal: false,  
-
+            show_modal: false,
             selected_meal: [] // selected meals from the modal
         }
     },
@@ -308,16 +302,27 @@ export default {
                 });
         },
 
-        modalGetMeals(type_of_meal_arg) { // fetch the meals from the database to the modal
-            this.time_of_meal = type_of_meal_arg; // dinner, lunch ...
-            this.all_meals = {};
-            axios.get('/api/meals/').then(response => {
-                this.all_meals = response.data.data;
-                this.show_modal = true; // show the modal with the meals
-            })
-                .catch(error => {
-                    console.log(error);
-                });
+        modalGetMeals(type_of_meal_arg, meal_arg) { // fetch the meals from the database to the modal
+            // convert the meal_arg to string to be able to send it to the search component
+            let meal_arg_string;
+            if (meal_arg) {
+                meal_arg_string = JSON.stringify(meal_arg); // convert the meal_arg to string
+            }
+            //reference to the search_meals.vue
+            this.$router.push({
+                name: 'search_meals/date/meal_type/meal_arg', 
+                params: { date: this.selected_date, meal_type: type_of_meal_arg, meal_arg: meal_arg_string }
+            });
+
+            // this.time_of_meal = type_of_meal_arg; // dinner, lunch ...
+            // this.all_meals = {};
+            // axios.get('/api/meals/').then(response => {
+            //     this.all_meals = response.data.data;
+            //     this.show_modal = true; // show the modal with the meals
+            // })
+            //     .catch(error => {
+            //         console.log(error);
+            //     });
         },
 
         closeModal() {
@@ -431,7 +436,6 @@ export default {
         },
 
         retrieveMeals(date) {
-            console.log('retrieving meals');
             this.meals = {};
             const url = '/api/meals/date/' + date;
             return axios.get(url).then(response => {
@@ -649,8 +653,9 @@ export default {
 }
 
 .accordion-body {
-    padding: 0.25em 0.5em ;
+    padding: 0.25em 0.5em;
 }
+
 .food p:first-child {
     margin-bottom: 0;
 }
@@ -671,6 +676,7 @@ export default {
     align-items: center;
     font-size: 1em;
 }
+
 .foodbtn {
     display: flex;
     border: none;
@@ -685,9 +691,9 @@ export default {
 }
 
 .collapse {
-  &:not(.show) {
-    display: none;
-  }
+    &:not(.show) {
+        display: none;
+    }
 }
 
 

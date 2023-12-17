@@ -36,7 +36,7 @@ Route::get('/account', function () {
     return view('welcome');
 });
 
-Route::get('/search_meals/{date}/{meal_type}', function () {
+Route::get('/search_meals/{date}/{meal_type}/{meal_arg}', function () {
     return view('welcome');
 });
 

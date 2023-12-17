@@ -77,7 +77,7 @@ export default {
                 portion_size: this.portion,
                 date: this.date,
                 id: this.Data.id,
-                time_of_meal: this.meal_time,
+                type_of_meal: this.meal_time,
             }
 
             axios.post(url, data).then(response => {

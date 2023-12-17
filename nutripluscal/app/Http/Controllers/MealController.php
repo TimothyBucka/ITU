@@ -341,8 +341,14 @@ class MealController extends Controller
 
         for ($i=0; $i < $mealGoal; $i++) { 
             $recommended_meals[] = $mealAndDifference[$i][0];
+            $restaurant = $mealAndDifference[$i][0]->restaurant_id;
+            // get name of the restaurant based on the id
+            if ($restaurant) {
+                $restaurant_name = Restaurants::findOrFail($restaurant)->name;
+                $recommended_meals[$i]['restaurant_name'] = $restaurant_name;
+            }
         }
-        
+
         return $recommended_meals;
     }
 }

@@ -1,3 +1,9 @@
+<!-- 
+######################################### FILE: restaurant.vue ###############################################
+Authors: Timotej Bucka (xbucka00)
+############################################################################################################### 
+-->
+
 <template>
     <template v-if="this.data.name">
         <img class="rest_img" :src="getImageUrl(this.data.photo_url)" alt="Restaurant image">

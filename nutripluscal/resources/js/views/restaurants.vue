@@ -11,7 +11,7 @@ Authors: Timotej Bucka (xbucka00)
         <restaurantSearch label="Search" placeholder="Search for restaurants" api_url="/api/restaurants/search"
             @search="search" />
         <div class="searched" v-if="searched">
-            <router-link v-for="(item, index) in searched" :key="'searched-' + index"
+            <router-link v-for="(item, index) in searched.slice(0, 3)" :key="'searched-' + index"
                 :to="{ name: 'restaurants/id', params: { id: item.id } }" style="text-decoration: none; color: inherit;" class="item">
                     <p>{{ item.name }} - <span> {{ item.address }} </span></p>
                     <span> {{ item.type }} </span>

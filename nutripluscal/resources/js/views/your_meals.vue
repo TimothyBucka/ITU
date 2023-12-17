@@ -14,7 +14,8 @@ Authors: Adam Pap (xpapad11)
 
         <h4 class="py-3">Meals created by you</h4>
         <div v-for="(meal, index) in added_meals" :key="index">
-            <mealTile :Data="meal" :Index="index" Type="your_meals" @deleteCreatedMeal="deleteCreatedMeal" @showEditModal="showEditModal"></mealTile>
+            <mealTile :Data="meal" :Index="index" Type="your_meals" @deleteCreatedMeal="deleteCreatedMeal"
+                @showEditModal="showEditModal"></mealTile>
         </div>
         <div v-if="this.pagination_last_page != null && this.pagination_last_page > 1">
             <button class="btn btn-primary" @click="previousPage">Previous</button>
@@ -95,7 +96,6 @@ export default {
 
     methods: {
         handleFileUpload(event) { // handle the file upload for the meal
-            console.log(event.target.files[0]);
             this.meal_params.photo_path = event.target.files[0];
         },
 
@@ -158,7 +158,7 @@ export default {
                 });
                 return;
             }
-            
+
             formData.append('photo', this.meal_params.photo_path); // Append the photo to the formData instance
 
             // Append the other parameters to the formData instance
@@ -282,6 +282,7 @@ export default {
 .container {
     max-width: 90%;
     margin: auto;
+    margin-bottom: 1rem;
 }
 
 .buttons {

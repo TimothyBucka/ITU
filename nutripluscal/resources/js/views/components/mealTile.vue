@@ -180,7 +180,7 @@ select {
     cursor: pointer;
 }
 
-@media screen and (max-width: 450px) {
+@media screen and (max-width: 560px) {
     .meal {
         flex-direction: column;
     }

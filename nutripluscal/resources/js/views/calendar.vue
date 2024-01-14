@@ -196,7 +196,7 @@ export default {
             if (meal) {
                 for (let item of meal) {
                     if (Array.isArray(item.meal) && item.meal.length > 0) { // chceck if there is something in the field
-                        total += item.meal[0].calories;
+                        total += item.meal[0].calories * item.portion_size;
                     } else {
                         break;
                     }
@@ -215,10 +215,10 @@ export default {
             if (meal) {
                 for (let item of meal) {
                     if (Array.isArray(item.meal) && item.meal.length > 0) { // chceck if there is something in the field
-                        total.proteins += item.meal[0].proteins;
-                        total.fibers += item.meal[0].fibers;
-                        total.fats += item.meal[0].fats;
-                        total.carbs += item.meal[0].carbs;
+                        total.proteins += item.meal[0].proteins * item.portion_size;
+                        total.fibers += item.meal[0].fibers * item.portion_size;
+                        total.fats += item.meal[0].fats * item.portion_size;
+                        total.carbs += item.meal[0].carbs * item.portion_size;
                     } else {
                         break;
                     }

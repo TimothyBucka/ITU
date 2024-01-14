@@ -24,7 +24,7 @@ Authors: Adam Pap (xpapad11)
                         </li>
 
                         <li class="nav-item">
-                            <router-link @click="closeNav()" class="nav-link" aria-current="page" to="/y_meals">Yours
+                            <router-link @click="closeNav()" class="nav-link" aria-current="page" to="/y_meals">Your
                                 meals</router-link>
                         </li>
 
